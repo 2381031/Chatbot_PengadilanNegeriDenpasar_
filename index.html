@@ -268,21 +268,34 @@ async function sendQuestion(question){
         </div>
     `;
 
-    /* FETCH API */
+    try{
 
-    const response = await fetch(
-        `http://localhost:3000/api/chat?q=${encodeURIComponent(question)}`
-    );
+        /* FETCH API */
 
-    const data = await response.json();
+        const response = await fetch(
+            `/api/chat?q=${encodeURIComponent(question)}`
+        );
 
-    /* BOT MESSAGE */
+        const data = await response.json();
 
-    chatbox.innerHTML += `
-        <div class="message bot">
-            ${data.reply.replace(/\n/g, "<br>")}
-        </div>
-    `;
+        /* BOT MESSAGE */
+
+        chatbox.innerHTML += `
+            <div class="message bot">
+                ${data.reply.replace(/\n/g, "<br>")}
+            </div>
+        `;
+
+    }catch(error){
+
+        chatbox.innerHTML += `
+            <div class="message bot">
+                Maaf, server sedang tidak dapat dihubungkan.
+            </div>
+        `;
+
+        console.error(error);
+    }
 
     /* AUTO SCROLL */
 
@@ -291,6 +304,5 @@ async function sendQuestion(question){
 }
 
 </script>
-
 </body>
 </html>
