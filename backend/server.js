@@ -34,7 +34,7 @@ app.get("/api/chat", async (req, res) => {
     }
 
     const result = await pool.query(
-      'SELECT "answer text" AS answer FROM faqs WHERE LOWER("question text") = $1',
+      "SELECT answer FROM faqs WHERE LOWER(question) = $1",
       [question]
     );
 
