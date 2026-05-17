@@ -12,9 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-console.log("DATABASE URL:");
-console.log(process.env.DATABASE_URL);
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -28,17 +25,12 @@ app.get("/", (req, res) => {
 
 app.get("/api/chat", async (req, res) => {
   try {
-
-    const question = req.query.q?.toLowerCase();
-
-    console.log("Question:", question);
+    const question = req.query.q?.toLowerCase().trim();
 
     const result = await pool.query(
-      "SELECT answer FROM faqs WHERE LOWER(question) = $1",
+      'SELECT "answer text" AS answer FROM faqs WHERE LOWER(question) = $1',
       [question]
     );
-
-    console.log(result.rows);
 
     if (result.rows.length > 0) {
       res.json({
@@ -51,7 +43,6 @@ app.get("/api/chat", async (req, res) => {
     }
 
   } catch (error) {
-
     console.log("ERROR DATABASE:");
     console.log(error);
 
@@ -61,6 +52,4 @@ app.get("/api/chat", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Server berjalan di port 3000");
-});
+export default app;
