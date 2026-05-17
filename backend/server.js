@@ -27,26 +27,32 @@ app.get("/api/chat", async (req, res) => {
   try {
     const question = req.query.q?.toLowerCase().trim();
 
+    if (!question) {
+      return res.json({
+        reply: "Pertanyaan tidak boleh kosong",
+      });
+    }
+
     const result = await pool.query(
-      'SELECT "answer text" AS answer FROM faqs WHERE LOWER(question) = $1',
+      'SELECT "answer text" AS answer FROM faqs WHERE LOWER("question text") = $1',
       [question]
     );
 
     if (result.rows.length > 0) {
-      res.json({
+      return res.json({
         reply: result.rows[0].answer,
       });
-    } else {
-      res.json({
-        reply: "Pertanyaan tidak ditemukan",
-      });
     }
+
+    return res.json({
+      reply: "Pertanyaan tidak ditemukan",
+    });
 
   } catch (error) {
     console.log("ERROR DATABASE:");
     console.log(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       reply: "Terjadi kesalahan server",
     });
   }
