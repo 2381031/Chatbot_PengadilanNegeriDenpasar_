@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -20,8 +19,6 @@ body{
     font-family:Arial, sans-serif;
     background:#f3f4f6;
 }
-
-/* BUTTON FLOAT */
 
 .chat-toggle{
     position:fixed;
@@ -45,8 +42,6 @@ body{
     background:#a30000;
 }
 
-/* CHATBOX */
-
 .chat-container{
     position:fixed;
     bottom:100px;
@@ -61,8 +56,6 @@ body{
     flex-direction:column;
     z-index:999;
 }
-
-/* HEADER */
 
 .chat-header{
     background:#8b0000;
@@ -90,16 +83,12 @@ body{
     opacity:0.9;
 }
 
-/* CHAT AREA */
-
 #chatbox{
     flex:1;
     padding:15px;
     overflow-y:auto;
     background:#f9fafb;
 }
-
-/* MESSAGE */
 
 .message{
     margin-bottom:15px;
@@ -113,6 +102,9 @@ body{
 .bot{
     background:#e5e7eb;
     color:#111827;
+    white-space:normal;
+    line-height:1.6;
+    font-size:14px;
 }
 
 .user{
@@ -120,8 +112,6 @@ body{
     color:white;
     margin-left:auto;
 }
-
-/* QUICK QUESTIONS */
 
 .questions{
     padding:15px;
@@ -147,8 +137,6 @@ body{
     background:#b30000;
 }
 
-/* SCROLL */
-
 #chatbox::-webkit-scrollbar{
     width:5px;
 }
@@ -157,94 +145,60 @@ body{
     background:#ccc;
     border-radius:10px;
 }
-
-.bot{
-    background:#e5e7eb;
-    color:#111827;
-    white-space:normal;
-    line-height:1.6;
-    font-size:14px;
-}   
 </style>
 </head>
 <body>
-
-<!-- FLOAT BUTTON -->
 
 <button class="chat-toggle" onclick="toggleChat()">
     <i class="fa-solid fa-comments"></i>
 </button>
 
-<!-- CHATBOT -->
-
 <div class="chat-container" id="chatContainer">
 
-    <!-- HEADER -->
-
     <div class="chat-header">
-
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Lambang_Mahkamah_Agung_RI.svg/1200px-Lambang_Mahkamah_Agung_RI.svg.png">
 
         <div class="header-text">
             <h2>PN Denpasar</h2>
             <p>Pelayanan Informasi Online</p>
         </div>
-
     </div>
 
-    <!-- CHAT -->
-
     <div id="chatbox">
-
         <div class="message bot">
             👋 Selamat datang di layanan chatbot Pengadilan Negeri Denpasar.
             <br><br>
             Silakan pilih pertanyaan yang tersedia di bawah.
         </div>
-
     </div>
 
-    <!-- BUTTON QUESTIONS -->
-
     <div class="questions">
-
-        <button class="question-btn"
-        onclick="sendQuestion('jam pelayanan')">
+        <button class="question-btn" onclick="sendQuestion('jam pelayanan')">
             Jam Pelayanan
         </button>
 
-        <button class="question-btn"
-        onclick="sendQuestion('alamat kantor')">
+        <button class="question-btn" onclick="sendQuestion('alamat kantor')">
             Alamat Kantor
         </button>
 
-        <button class="question-btn"
-        onclick="sendQuestion('kontak')">
+        <button class="question-btn" onclick="sendQuestion('kontak')">
             Kontak
         </button>
 
-        <button class="question-btn"
-        onclick="sendQuestion('Jadwal sidang')">
+        <button class="question-btn" onclick="sendQuestion('Jadwal sidang')">
             Jadwal Sidang
         </button>
 
-        <button class="question-btn"
-        onclick="sendQuestion('layanan hukum')">
+        <button class="question-btn" onclick="sendQuestion('layanan hukum')">
             Layanan Hukum
         </button>
-
     </div>
 
 </div>
 
 <script>
-
-/* TOGGLE CHAT */
-
 function toggleChat(){
-
-    const chat =
-    document.getElementById("chatContainer");
+    const chat = document.getElementById("chatContainer");
 
     if(chat.style.display === "flex"){
         chat.style.display = "none";
@@ -253,14 +207,8 @@ function toggleChat(){
     }
 }
 
-/* SEND QUESTION */
-
 async function sendQuestion(question){
-
-    const chatbox =
-    document.getElementById("chatbox");
-
-    /* USER MESSAGE */
+    const chatbox = document.getElementById("chatbox");
 
     chatbox.innerHTML += `
         <div class="message user">
@@ -269,16 +217,16 @@ async function sendQuestion(question){
     `;
 
     try{
-
-        /* FETCH API */
+        const API_URL =
+            location.hostname === "127.0.0.1" || location.hostname === "localhost"
+            ? "http://localhost:3000"
+            : "";
 
         const response = await fetch(
-            `/api/chat?q=${encodeURIComponent(question)}`
+            `${API_URL}/api/chat?q=${encodeURIComponent(question)}`
         );
 
         const data = await response.json();
-
-        /* BOT MESSAGE */
 
         chatbox.innerHTML += `
             <div class="message bot">
@@ -287,7 +235,6 @@ async function sendQuestion(question){
         `;
 
     }catch(error){
-
         chatbox.innerHTML += `
             <div class="message bot">
                 Maaf, server sedang tidak dapat dihubungkan.
@@ -297,12 +244,9 @@ async function sendQuestion(question){
         console.error(error);
     }
 
-    /* AUTO SCROLL */
-
-    chatbox.scrollTop =
-    chatbox.scrollHeight;
+    chatbox.scrollTop = chatbox.scrollHeight;
 }
-
 </script>
+
 </body>
 </html>
