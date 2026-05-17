@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Chatbot Pengadilan Negeri Denpasar</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f3f4f6;
+}
+
+/* BUTTON FLOAT */
+
+.chat-toggle{
+    position:fixed;
+    bottom:25px;
+    right:25px;
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    border:none;
+    background:#8b0000;
+    color:white;
+    font-size:28px;
+    cursor:pointer;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    z-index:999;
+    transition:0.3s;
+}
+
+.chat-toggle:hover{
+    transform:scale(1.08);
+    background:#a30000;
+}
+
+/* CHATBOX */
+
+.chat-container{
+    position:fixed;
+    bottom:100px;
+    right:25px;
+    width:380px;
+    height:600px;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    display:none;
+    flex-direction:column;
+    z-index:999;
+}
+
+/* HEADER */
+
+.chat-header{
+    background:#8b0000;
+    color:white;
+    padding:18px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.chat-header img{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:white;
+    padding:5px;
+}
+
+.header-text h2{
+    font-size:18px;
+}
+
+.header-text p{
+    font-size:13px;
+    opacity:0.9;
+}
+
+/* CHAT AREA */
+
+#chatbox{
+    flex:1;
+    padding:15px;
+    overflow-y:auto;
+    background:#f9fafb;
+}
+
+/* MESSAGE */
+
+.message{
+    margin-bottom:15px;
+    padding:12px 15px;
+    border-radius:15px;
+    max-width:85%;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.bot{
+    background:#e5e7eb;
+    color:#111827;
+}
+
+.user{
+    background:#8b0000;
+    color:white;
+    margin-left:auto;
+}
+
+/* QUICK QUESTIONS */
+
+.questions{
+    padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    border-top:1px solid #ddd;
+    background:white;
+}
+
+.question-btn{
+    border:none;
+    background:#8b0000;
+    color:white;
+    padding:10px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:13px;
+    transition:0.3s;
+}
+
+.question-btn:hover{
+    background:#b30000;
+}
+
+/* SCROLL */
+
+#chatbox::-webkit-scrollbar{
+    width:5px;
+}
+
+#chatbox::-webkit-scrollbar-thumb{
+    background:#ccc;
+    border-radius:10px;
+}
+
+.bot{
+    background:#e5e7eb;
+    color:#111827;
+    white-space:normal;
+    line-height:1.6;
+    font-size:14px;
+}   
+</style>
+</head>
+<body>
+
+<!-- FLOAT BUTTON -->
+
+<button class="chat-toggle" onclick="toggleChat()">
+    <i class="fa-solid fa-comments"></i>
+</button>
+
+<!-- CHATBOT -->
+
+<div class="chat-container" id="chatContainer">
+
+    <!-- HEADER -->
+
+    <div class="chat-header">
+
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Lambang_Mahkamah_Agung_RI.svg/1200px-Lambang_Mahkamah_Agung_RI.svg.png">
+
+        <div class="header-text">
+            <h2>PN Denpasar</h2>
+            <p>Pelayanan Informasi Online</p>
+        </div>
+
+    </div>
+
+    <!-- CHAT -->
+
+    <div id="chatbox">
+
+        <div class="message bot">
+            👋 Selamat datang di layanan chatbot Pengadilan Negeri Denpasar.
+            <br><br>
+            Silakan pilih pertanyaan yang tersedia di bawah.
+        </div>
+
+    </div>
+
+    <!-- BUTTON QUESTIONS -->
+
+    <div class="questions">
+
+        <button class="question-btn"
+        onclick="sendQuestion('jam pelayanan')">
+            Jam Pelayanan
+        </button>
+
+        <button class="question-btn"
+        onclick="sendQuestion('alamat kantor')">
+            Alamat Kantor
+        </button>
+
+        <button class="question-btn"
+        onclick="sendQuestion('kontak')">
+            Kontak
+        </button>
+
+        <button class="question-btn"
+        onclick="sendQuestion('Jadwal sidang')">
+            Jadwal Sidang
+        </button>
+
+        <button class="question-btn"
+        onclick="sendQuestion('layanan hukum')">
+            Layanan Hukum
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+/* TOGGLE CHAT */
+
+function toggleChat(){
+
+    const chat =
+    document.getElementById("chatContainer");
+
+    if(chat.style.display === "flex"){
+        chat.style.display = "none";
+    }else{
+        chat.style.display = "flex";
+    }
+}
+
+/* SEND QUESTION */
+
+async function sendQuestion(question){
+
+    const chatbox =
+    document.getElementById("chatbox");
+
+    /* USER MESSAGE */
+
+    chatbox.innerHTML += `
+        <div class="message user">
+            ${question}
+        </div>
+    `;
+
+    /* FETCH API */
+
+    const response = await fetch(
+        `http://localhost:3000/api/chat?q=${encodeURIComponent(question)}`
+    );
+
+    const data = await response.json();
+
+    /* BOT MESSAGE */
+
+    chatbox.innerHTML += `
+        <div class="message bot">
+            ${data.reply.replace(/\n/g, "<br>")}
+        </div>
+    `;
+
+    /* AUTO SCROLL */
+
+    chatbox.scrollTop =
+    chatbox.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
