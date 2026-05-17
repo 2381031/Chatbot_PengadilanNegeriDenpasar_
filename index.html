@@ -145,8 +145,65 @@ body{
     background:#ccc;
     border-radius:10px;
 }
+
+/* RESPONSIVE */
+@media (max-width: 480px){
+
+    .chat-container{
+        width:100%;
+        height:100%;
+        right:0;
+        bottom:0;
+        border-radius:0;
+    }
+
+    .chat-toggle{
+        width:55px;
+        height:55px;
+        right:18px;
+        bottom:18px;
+        font-size:24px;
+    }
+
+    .chat-header{
+        padding:15px;
+    }
+
+    .chat-header img{
+        width:45px;
+        height:45px;
+    }
+
+    .header-text h2{
+        font-size:16px;
+    }
+
+    .header-text p{
+        font-size:12px;
+    }
+
+    #chatbox{
+        padding:12px;
+    }
+
+    .message{
+        max-width:90%;
+        font-size:13px;
+    }
+
+    .questions{
+        padding:12px;
+        gap:8px;
+    }
+
+    .question-btn{
+        font-size:12px;
+        padding:9px 12px;
+    }
+}
 </style>
 </head>
+
 <body>
 
 <button class="chat-toggle" onclick="toggleChat()">
@@ -173,6 +230,7 @@ body{
     </div>
 
     <div class="questions">
+
         <button class="question-btn" onclick="sendQuestion('jam pelayanan')">
             Jam Pelayanan
         </button>
@@ -185,19 +243,22 @@ body{
             Kontak
         </button>
 
-        <button class="question-btn" onclick="sendQuestion('Jadwal sidang')">
+        <button class="question-btn" onclick="sendQuestion('jadwal sidang')">
             Jadwal Sidang
         </button>
 
         <button class="question-btn" onclick="sendQuestion('layanan hukum')">
             Layanan Hukum
         </button>
+
     </div>
 
 </div>
 
 <script>
+
 function toggleChat(){
+
     const chat = document.getElementById("chatContainer");
 
     if(chat.style.display === "flex"){
@@ -208,6 +269,7 @@ function toggleChat(){
 }
 
 async function sendQuestion(question){
+
     const chatbox = document.getElementById("chatbox");
 
     chatbox.innerHTML += `
@@ -217,6 +279,7 @@ async function sendQuestion(question){
     `;
 
     try{
+
         const API_URL =
             location.hostname === "127.0.0.1" || location.hostname === "localhost"
             ? "http://localhost:3000"
@@ -235,6 +298,7 @@ async function sendQuestion(question){
         `;
 
     }catch(error){
+
         chatbox.innerHTML += `
             <div class="message bot">
                 Maaf, server sedang tidak dapat dihubungkan.
@@ -246,6 +310,7 @@ async function sendQuestion(question){
 
     chatbox.scrollTop = chatbox.scrollHeight;
 }
+
 </script>
 
 </body>
