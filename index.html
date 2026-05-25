@@ -137,6 +137,42 @@ body{
     background:#b30000;
 }
 
+.question-btn.other{
+    background:#374151;
+}
+
+.question-btn.other:hover{
+    background:#111827;
+}
+
+.chat-input-area{
+    display:none;
+    padding:12px;
+    gap:8px;
+    border-top:1px solid #ddd;
+    background:#fff;
+}
+
+.chat-input-area input{
+    flex:1;
+    border:1px solid #ccc;
+    border-radius:20px;
+    padding:10px 14px;
+    outline:none;
+    font-size:13px;
+}
+
+.chat-input-area button{
+    border:none;
+    background:#8b0000;
+    color:white;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:15px;
+}
+
 #chatbox::-webkit-scrollbar{
     width:5px;
 }
@@ -146,7 +182,6 @@ body{
     border-radius:10px;
 }
 
-/* RESPONSIVE */
 @media (max-width: 480px){
 
     .chat-container{
@@ -229,7 +264,7 @@ body{
         </div>
     </div>
 
-    <div class="questions">
+    <div class="questions" id="questionArea">
 
         <button class="question-btn" onclick="sendQuestion('jam pelayanan')">
             Jam Pelayanan
@@ -251,6 +286,17 @@ body{
             Layanan Hukum
         </button>
 
+        <button class="question-btn other" onclick="showOtherQuestion()">
+            Lainnya
+        </button>
+
+    </div>
+
+    <div class="chat-input-area" id="inputArea">
+        <input type="text" id="userInput" placeholder="Tulis pertanyaan Anda di sini..." onkeydown="if(event.key === 'Enter') submitOtherQuestion()">
+        <button onclick="submitOtherQuestion()">
+            <i class="fa-solid fa-paper-plane"></i>
+        </button>
     </div>
 
 </div>
@@ -268,15 +314,65 @@ function toggleChat(){
     }
 }
 
-async function sendQuestion(question){
-
+function addMessage(type, text){
     const chatbox = document.getElementById("chatbox");
 
     chatbox.innerHTML += `
-        <div class="message user">
-            ${question}
+        <div class="message ${type}">
+            ${text.replace(/\n/g, "<br>")}
         </div>
     `;
+
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function showOtherQuestion(){
+    addMessage("user", "Lainnya");
+
+    setTimeout(() => {
+        addMessage(
+            "bot",
+            "Silakan ajukan pertanyaan Anda melalui kolom chat di bawah."
+        );
+
+        document.getElementById("inputArea").style.display = "flex";
+        document.getElementById("userInput").focus();
+    }, 400);
+}
+
+function submitOtherQuestion(){
+    const input = document.getElementById("userInput");
+    const question = input.value.trim();
+
+    if(question === ""){
+        return;
+    }
+
+    addMessage("user", question);
+
+    const unansweredQuestions = JSON.parse(localStorage.getItem("unansweredQuestions")) || [];
+
+    unansweredQuestions.push({
+        question: question,
+        status: "menunggu jawaban",
+        createdAt: new Date().toLocaleString("id-ID")
+    });
+
+    localStorage.setItem("unansweredQuestions", JSON.stringify(unansweredQuestions));
+
+    input.value = "";
+
+    setTimeout(() => {
+        addMessage(
+            "bot",
+            "Mohon tunggu, pertanyaan Anda akan segera kami jawab. Terimakasih."
+        );
+    }, 400);
+}
+
+async function sendQuestion(question){
+
+    addMessage("user", question);
 
     try{
 
@@ -291,24 +387,14 @@ async function sendQuestion(question){
 
         const data = await response.json();
 
-        chatbox.innerHTML += `
-            <div class="message bot">
-                ${data.reply.replace(/\n/g, "<br>")}
-            </div>
-        `;
+        addMessage("bot", data.reply);
 
     }catch(error){
 
-        chatbox.innerHTML += `
-            <div class="message bot">
-                Maaf, server sedang tidak dapat dihubungkan.
-            </div>
-        `;
+        addMessage("bot", "Maaf, server sedang tidak dapat dihubungkan.");
 
         console.error(error);
     }
-
-    chatbox.scrollTop = chatbox.scrollHeight;
 }
 
 </script>
