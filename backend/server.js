@@ -10,57 +10,58 @@ app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: { rejectUnauthorized: false }
 });
 
-app.get('/api/health', (req, res) => {
-  return res.status(200).json({
-    status: 'OK',
-    message: 'Backend Vercel berjalan'
-  });
+function noCache(res) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+}
+
+app.get('/', (req, res) => {
+  noCache(res);
+  res.status(200).send('Backend chatbot PN Denpasar berjalan.');
 });
 
-app.get('/api/db-test', async (req, res) => {
+app.get('/api/health', async (req, res) => {
+  noCache(res);
+
   try {
-    if (!process.env.DATABASE_URL) {
-      return res.status(500).json({
-        status: 'ERROR',
-        message: 'DATABASE_URL belum ada di Vercel'
-      });
-    }
+    const result = await pool.query('SELECT NOW() AS waktu_database');
 
-    const result = await pool.query('SELECT NOW() AS waktu');
-
-    return res.status(200).json({
+    res.status(200).json({
       status: 'OK',
+      message: 'Backend Vercel berjalan',
       database: 'connected',
-      waktu: result.rows[0].waktu
+      waktu_database: result.rows[0].waktu_database
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       status: 'ERROR',
-      database: 'not connected',
+      message: 'Backend berjalan, tetapi database belum terhubung',
       detail: error.message
     });
   }
 });
 
 app.get('/api/faqs', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, question, answer
-       FROM fags
-       ORDER BY id ASC`
-    );
+  noCache(res);
 
-    return res.status(200).json({
+  try {
+    const result = await pool.query(`
+      SELECT id, question, answer
+      FROM faqs
+      ORDER BY id ASC
+    `);
+
+    res.status(200).json({
       success: true,
       data: result.rows
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: 'Gagal mengambil daftar pertanyaan.',
       detail: error.message
@@ -69,6 +70,8 @@ app.get('/api/faqs', async (req, res) => {
 });
 
 app.get('/api/chat', async (req, res) => {
+  noCache(res);
+
   const q = (req.query.q || '').trim();
 
   if (!q) {
@@ -80,7 +83,7 @@ app.get('/api/chat', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT question, answer
-       FROM fags
+       FROM faqs
        WHERE LOWER(question) = LOWER($1)
           OR LOWER(question) LIKE LOWER($2)
           OR LOWER($1) LIKE '%' || LOWER(question) || '%'
@@ -97,11 +100,11 @@ app.get('/api/chat', async (req, res) => {
       });
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       reply: result.rows[0].answer
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       reply: 'Maaf, server sedang mengalami gangguan.',
       detail: error.message
     });
@@ -109,6 +112,8 @@ app.get('/api/chat', async (req, res) => {
 });
 
 app.post('/api/pertanyaan-lainnya', async (req, res) => {
+  noCache(res);
+
   const question = (req.body.question || '').trim();
 
   if (!question) {
@@ -126,13 +131,13 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
       [question]
     );
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       message: 'Pertanyaan berhasil disimpan.',
       data: result.rows[0]
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: 'Gagal menyimpan pertanyaan.',
       detail: error.message
@@ -141,19 +146,21 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
 });
 
 app.get('/api/pertanyaan-lainnya', async (req, res) => {
-  try {
-    const result = await pool.query(
-      `SELECT id, question, answer, status, created_at, answered_at
-       FROM pertanyaan_lainnya
-       ORDER BY created_at DESC`
-    );
+  noCache(res);
 
-    return res.status(200).json({
+  try {
+    const result = await pool.query(`
+      SELECT id, question, answer, status, created_at, answered_at
+      FROM pertanyaan_lainnya
+      ORDER BY created_at DESC
+    `);
+
+    res.status(200).json({
       success: true,
       data: result.rows
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: 'Gagal mengambil data pertanyaan.',
       detail: error.message
@@ -165,8 +172,5 @@ module.exports = app;
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;
-
-  app.listen(port, () => {
-    console.log(`Server lokal berjalan di port ${port}`);
-  });
+  app.listen(port, () => console.log(`Server lokal berjalan di port ${port}`));
 }
