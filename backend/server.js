@@ -4,14 +4,15 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 app.get('/api/chat', async (req, res) => {
@@ -46,6 +47,7 @@ app.get('/api/chat', async (req, res) => {
     return res.json({
       reply: result.rows[0].answer
     });
+
   } catch (error) {
     console.error('Error /api/chat:', error);
 
@@ -60,6 +62,7 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
 
   if (!question) {
     return res.status(400).json({
+      success: false,
       error: 'Pertanyaan tidak boleh kosong.'
     });
   }
@@ -68,19 +71,23 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO pertanyaan_lainnya (question, status)
        VALUES ($1, 'menunggu jawaban')
-       RETURNING id, question, status, created_at`,
+       RETURNING id, question, answer, status, created_at, answered_at`,
       [question]
     );
 
     return res.status(201).json({
       success: true,
+      message: 'Pertanyaan berhasil disimpan.',
       data: result.rows[0]
     });
+
   } catch (error) {
     console.error('Error /api/pertanyaan-lainnya:', error);
 
     return res.status(500).json({
-      error: 'Gagal menyimpan pertanyaan.'
+      success: false,
+      error: 'Gagal menyimpan pertanyaan.',
+      detail: error.message
     });
   }
 });
@@ -94,21 +101,42 @@ app.get('/api/pertanyaan-lainnya', async (req, res) => {
     );
 
     return res.json(result.rows);
+
   } catch (error) {
-    console.error('Error get pertanyaan:', error);
+    console.error('Error get pertanyaan lainnya:', error);
 
     return res.status(500).json({
-      error: 'Gagal mengambil data.'
+      success: false,
+      error: 'Gagal mengambil data pertanyaan.',
+      detail: error.message
     });
   }
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK'
-  });
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT NOW()');
+
+    return res.json({
+      status: 'OK',
+      database: 'connected'
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      status: 'ERROR',
+      database: 'not connected',
+      detail: error.message
+    });
+  }
 });
 
-app.listen(port, () => {
-  console.log(`Server berjalan di port ${port}`);
-});
+module.exports = app;
+
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+
+  app.listen(port, () => {
+    console.log(`Server berjalan di port ${port}`);
+  });
+} 
