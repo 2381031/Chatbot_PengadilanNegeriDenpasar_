@@ -1,66 +1,114 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import pkg from "pg";
-
-dotenv.config();
-
-const { Pool } = pkg;
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
+require('dotenv').config();
 
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
-app.get("/", (req, res) => {
-  res.send("Server chatbot berjalan");
-});
+app.get('/api/chat', async (req, res) => {
+  const q = (req.query.q || '').trim();
 
-app.get("/api/chat", async (req, res) => {
+  if (!q) {
+    return res.status(400).json({
+      reply: 'Pertanyaan tidak boleh kosong.'
+    });
+  }
+
   try {
-    const question = req.query.q?.toLowerCase().trim();
-
-    if (!question) {
-      return res.json({
-        reply: "Pertanyaan tidak boleh kosong",
-      });
-    }
-
     const result = await pool.query(
-      "SELECT answer FROM faqs WHERE LOWER(question) = $1",
-      [question]
+      `SELECT question, answer
+       FROM fags
+       WHERE LOWER(question) = LOWER($1)
+          OR LOWER(question) LIKE LOWER($2)
+          OR LOWER($1) LIKE '%' || LOWER(question) || '%'
+       ORDER BY
+          CASE WHEN LOWER(question) = LOWER($1) THEN 1 ELSE 2 END,
+          id ASC
+       LIMIT 1`,
+      [q, `%${q}%`]
     );
 
-    if (result.rows.length > 0) {
+    if (result.rows.length === 0) {
       return res.json({
-        reply: result.rows[0].answer,
+        reply: 'Maaf, jawaban untuk pertanyaan tersebut belum tersedia. Silakan pilih menu Lainnya untuk mengajukan pertanyaan kepada petugas.'
       });
     }
 
     return res.json({
-      reply: "Pertanyaan tidak ditemukan",
+      reply: result.rows[0].answer
     });
-
   } catch (error) {
-    console.log("ERROR DATABASE:");
-    console.log(error);
+    console.error('Error /api/chat:', error);
 
     return res.status(500).json({
-      reply: "Terjadi kesalahan server",
+      reply: 'Maaf, server sedang mengalami gangguan.'
     });
   }
 });
-if (process.env.NODE_ENV !== "production") {
-  app.listen(3000, () => {
-    console.log("Server berjalan di port 3000");
-  });
-}
 
-export default app;
+app.post('/api/pertanyaan-lainnya', async (req, res) => {
+  const question = (req.body.question || '').trim();
+
+  if (!question) {
+    return res.status(400).json({
+      error: 'Pertanyaan tidak boleh kosong.'
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO pertanyaan_lainnya (question, status)
+       VALUES ($1, 'menunggu jawaban')
+       RETURNING id, question, status, created_at`,
+      [question]
+    );
+
+    return res.status(201).json({
+      success: true,
+      data: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error /api/pertanyaan-lainnya:', error);
+
+    return res.status(500).json({
+      error: 'Gagal menyimpan pertanyaan.'
+    });
+  }
+});
+
+app.get('/api/pertanyaan-lainnya', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, question, answer, status, created_at, answered_at
+       FROM pertanyaan_lainnya
+       ORDER BY created_at DESC`
+    );
+
+    return res.json(result.rows);
+  } catch (error) {
+    console.error('Error get pertanyaan:', error);
+
+    return res.status(500).json({
+      error: 'Gagal mengambil data.'
+    });
+  }
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'OK'
+  });
+});
+
+app.listen(port, () => {
+  console.log(`Server berjalan di port ${port}`);
+});

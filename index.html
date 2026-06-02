@@ -9,231 +9,235 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    font-family:Arial, sans-serif;
-    background:#f3f4f6;
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f4f6;
 }
 
-.chat-toggle{
-    position:fixed;
-    bottom:25px;
-    right:25px;
-    width:65px;
-    height:65px;
-    border-radius:50%;
-    border:none;
-    background:#8b0000;
-    color:white;
-    font-size:28px;
-    cursor:pointer;
-    box-shadow:0 5px 15px rgba(0,0,0,0.3);
-    z-index:999;
-    transition:0.3s;
+.chat-toggle {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: none;
+    background: #8b0000;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,.3);
+    z-index: 999;
+    transition: .3s;
 }
 
-.chat-toggle:hover{
-    transform:scale(1.08);
-    background:#a30000;
+.chat-toggle:hover {
+    transform: scale(1.08);
+    background: #a30000;
 }
 
-.chat-container{
-    position:fixed;
-    bottom:100px;
-    right:25px;
-    width:380px;
-    height:600px;
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
-    display:none;
-    flex-direction:column;
-    z-index:999;
+.chat-container {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 390px;
+    height: 620px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    display: none;
+    flex-direction: column;
+    z-index: 999;
 }
 
-.chat-header{
-    background:#8b0000;
-    color:white;
-    padding:18px;
-    display:flex;
-    align-items:center;
-    gap:15px;
+.chat-header {
+    background: #8b0000;
+    color: white;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.chat-header img{
-    width:50px;
-    height:50px;
-    border-radius:50%;
-    background:white;
-    padding:5px;
+.chat-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    padding: 5px;
 }
 
-.header-text h2{
-    font-size:18px;
+.header-text h2 {
+    font-size: 18px;
 }
 
-.header-text p{
-    font-size:13px;
-    opacity:0.9;
+.header-text p {
+    font-size: 13px;
+    opacity: .9;
 }
 
-#chatbox{
-    flex:1;
-    padding:15px;
-    overflow-y:auto;
-    background:#f9fafb;
+#chatbox {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9fafb;
 }
 
-.message{
-    margin-bottom:15px;
-    padding:12px 15px;
-    border-radius:15px;
-    max-width:85%;
-    line-height:1.5;
-    font-size:14px;
+.message {
+    margin-bottom: 15px;
+    padding: 12px 15px;
+    border-radius: 15px;
+    max-width: 88%;
+    line-height: 1.5;
+    font-size: 14px;
+    word-wrap: break-word;
 }
 
-.bot{
-    background:#e5e7eb;
-    color:#111827;
-    white-space:normal;
-    line-height:1.6;
-    font-size:14px;
+.bot {
+    background: #e5e7eb;
+    color: #111827;
+    white-space: normal;
+    line-height: 1.6;
 }
 
-.user{
-    background:#8b0000;
-    color:white;
-    margin-left:auto;
+.user {
+    background: #8b0000;
+    color: white;
+    margin-left: auto;
 }
 
-.questions{
-    padding:15px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    border-top:1px solid #ddd;
-    background:white;
+.questions {
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+    background: white;
+    max-height: 185px;
+    overflow-y: auto;
 }
 
-.question-btn{
-    border:none;
-    background:#8b0000;
-    color:white;
-    padding:10px 14px;
-    border-radius:20px;
-    cursor:pointer;
-    font-size:13px;
-    transition:0.3s;
+.question-btn {
+    border: none;
+    background: #8b0000;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: .3s;
 }
 
-.question-btn:hover{
-    background:#b30000;
+.question-btn:hover {
+    background: #b30000;
 }
 
-.question-btn.other{
-    background:#374151;
+.question-btn.other {
+    background: #374151;
 }
 
-.question-btn.other:hover{
-    background:#111827;
+.question-btn.other:hover {
+    background: #111827;
 }
 
-.chat-input-area{
-    display:none;
-    padding:12px;
-    gap:8px;
-    border-top:1px solid #ddd;
-    background:#fff;
+.chat-input-area {
+    display: none;
+    padding: 12px;
+    gap: 8px;
+    border-top: 1px solid #ddd;
+    background: #fff;
 }
 
-.chat-input-area input{
-    flex:1;
-    border:1px solid #ccc;
-    border-radius:20px;
-    padding:10px 14px;
-    outline:none;
-    font-size:13px;
+.chat-input-area input {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 14px;
+    outline: none;
+    font-size: 13px;
 }
 
-.chat-input-area button{
-    border:none;
-    background:#8b0000;
-    color:white;
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    cursor:pointer;
-    font-size:15px;
+.chat-input-area button {
+    border: none;
+    background: #8b0000;
+    color: white;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
 }
 
-#chatbox::-webkit-scrollbar{
-    width:5px;
+#chatbox::-webkit-scrollbar,
+.questions::-webkit-scrollbar {
+    width: 5px;
 }
 
-#chatbox::-webkit-scrollbar-thumb{
-    background:#ccc;
-    border-radius:10px;
+#chatbox::-webkit-scrollbar-thumb,
+.questions::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
 }
 
-@media (max-width: 480px){
-
-    .chat-container{
-        width:100%;
-        height:100%;
-        right:0;
-        bottom:0;
-        border-radius:0;
+@media(max-width: 480px) {
+    .chat-container {
+        width: 100%;
+        height: 100%;
+        right: 0;
+        bottom: 0;
+        border-radius: 0;
     }
 
-    .chat-toggle{
-        width:55px;
-        height:55px;
-        right:18px;
-        bottom:18px;
-        font-size:24px;
+    .chat-toggle {
+        width: 55px;
+        height: 55px;
+        right: 18px;
+        bottom: 18px;
+        font-size: 24px;
     }
 
-    .chat-header{
-        padding:15px;
+    .chat-header {
+        padding: 15px;
     }
 
-    .chat-header img{
-        width:45px;
-        height:45px;
+    .chat-header img {
+        width: 45px;
+        height: 45px;
     }
 
-    .header-text h2{
-        font-size:16px;
+    .header-text h2 {
+        font-size: 16px;
     }
 
-    .header-text p{
-        font-size:12px;
+    .header-text p {
+        font-size: 12px;
     }
 
-    #chatbox{
-        padding:12px;
+    #chatbox {
+        padding: 12px;
     }
 
-    .message{
-        max-width:90%;
-        font-size:13px;
+    .message {
+        max-width: 90%;
+        font-size: 13px;
     }
 
-    .questions{
-        padding:12px;
-        gap:8px;
+    .questions {
+        padding: 12px;
+        gap: 8px;
+        max-height: 210px;
     }
 
-    .question-btn{
-        font-size:12px;
-        padding:9px 12px;
+    .question-btn {
+        font-size: 12px;
+        padding: 9px 12px;
     }
 }
 </style>
@@ -248,11 +252,11 @@ body{
 <div class="chat-container" id="chatContainer">
 
     <div class="chat-header">
-        <img src="Logo.png" alt="Logo">
+        <img src="Logo.png" alt="Logo PN Denpasar">
 
         <div class="header-text">
             <h2>PN Denpasar</h2>
-            <p>Pelayanan Informasi Online</p>   
+            <p>Pelayanan Informasi Online</p>
         </div>
     </div>
 
@@ -260,30 +264,50 @@ body{
         <div class="message bot">
             👋 Selamat datang di layanan chatbot Pengadilan Negeri Denpasar.
             <br><br>
-            Silakan pilih pertanyaan yang tersedia di bawah.
+            Silakan pilih pertanyaan yang tersedia di bawah. Jika pertanyaan belum tersedia, pilih <b>Lainnya</b> lalu ketik pertanyaan Anda.
         </div>
     </div>
 
     <div class="questions" id="questionArea">
 
-        <button class="question-btn" onclick="sendQuestion('jam pelayanan')">
-            Jam Pelayanan
+        <button class="question-btn" onclick="sendQuestion('layanan e-court')">
+            Layanan E-Court
         </button>
 
-        <button class="question-btn" onclick="sendQuestion('alamat kantor')">
-            Alamat Kantor
+        <button class="question-btn" onclick="sendQuestion('buat user e-court')">
+            User E-Court
         </button>
 
-        <button class="question-btn" onclick="sendQuestion('kontak')">
-            Kontak
+        <button class="question-btn" onclick="sendQuestion('pendaftaran perkara online')">
+            Daftar Perkara Online
         </button>
 
-        <button class="question-btn" onclick="sendQuestion('jadwal sidang')">
-            Jadwal Sidang
+        <button class="question-btn" onclick="sendQuestion('layanan umum dan keuangan')">
+            Umum & Keuangan
         </button>
 
-        <button class="question-btn" onclick="sendQuestion('layanan hukum')">
-            Layanan Hukum
+        <button class="question-btn" onclick="sendQuestion('layanan tipikor')">
+            Tipikor
+        </button>
+
+        <button class="question-btn" onclick="sendQuestion('izin besuk tahanan')">
+            Izin Besuk
+        </button>
+
+        <button class="question-btn" onclick="sendQuestion('layanan phi')">
+            PHI
+        </button>
+
+        <button class="question-btn" onclick="sendQuestion('layanan kepaniteraan hukum')">
+            Kepaniteraan Hukum
+        </button>
+
+        <button class="question-btn" onclick="sendQuestion('legalisasi surat')">
+            Legalisasi Surat
+        </button>
+
+        <button class="question-btn" onclick="sendQuestion('permohonan surat keterangan')">
+            Surat Keterangan
         </button>
 
         <button class="question-btn other" onclick="showOtherQuestion()">
@@ -293,7 +317,13 @@ body{
     </div>
 
     <div class="chat-input-area" id="inputArea">
-        <input type="text" id="userInput" placeholder="Tulis pertanyaan Anda di sini..." onkeydown="if(event.key === 'Enter') submitOtherQuestion()">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Tulis pertanyaan Anda di sini..."
+            onkeydown="if(event.key === 'Enter') submitOtherQuestion()"
+        >
+
         <button onclick="submitOtherQuestion()">
             <i class="fa-solid fa-paper-plane"></i>
         </button>
@@ -302,101 +332,122 @@ body{
 </div>
 
 <script>
+function toggleChat() {
+    const chat = document.getElementById('chatContainer');
 
-function toggleChat(){
-
-    const chat = document.getElementById("chatContainer");
-
-    if(chat.style.display === "flex"){
-        chat.style.display = "none";
-    }else{
-        chat.style.display = "flex";
+    if (chat.style.display === 'flex') {
+        chat.style.display = 'none';
+    } else {
+        chat.style.display = 'flex';
     }
 }
 
-function addMessage(type, text){
-    const chatbox = document.getElementById("chatbox");
+function escapeHtml(text) {
+    return String(text).replace(/[&<>'"]/g, function(c) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[c];
+    });
+}
+
+function addMessage(type, text) {
+    const chatbox = document.getElementById('chatbox');
 
     chatbox.innerHTML += `
         <div class="message ${type}">
-            ${text.replace(/\n/g, "<br>")}
+            ${escapeHtml(text).replace(/\n/g, '<br>')}
         </div>
     `;
 
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-function showOtherQuestion(){
-    addMessage("user", "Lainnya");
+function showOtherQuestion() {
+    addMessage('user', 'Lainnya');
 
     setTimeout(() => {
         addMessage(
-            "bot",
-            "Silakan ajukan pertanyaan Anda melalui kolom chat di bawah."
+            'bot',
+            'Silakan ajukan pertanyaan Anda melalui kolom chat di bawah. Pertanyaan akan tersimpan dan menunggu jawaban petugas.'
         );
 
-        document.getElementById("inputArea").style.display = "flex";
-        document.getElementById("userInput").focus();
-    }, 400);
+        document.getElementById('inputArea').style.display = 'flex';
+        document.getElementById('userInput').focus();
+    }, 300);
 }
 
-function submitOtherQuestion(){
-    const input = document.getElementById("userInput");
+async function submitOtherQuestion() {
+    const input = document.getElementById('userInput');
     const question = input.value.trim();
 
-    if(question === ""){
+    if (question === '') {
         return;
     }
 
-    addMessage("user", question);
+    addMessage('user', question);
+    input.value = '';
 
-    const unansweredQuestions = JSON.parse(localStorage.getItem("unansweredQuestions")) || [];
-
-    unansweredQuestions.push({
-        question: question,
-        status: "menunggu jawaban",
-        createdAt: new Date().toLocaleString("id-ID")
-    });
-
-    localStorage.setItem("unansweredQuestions", JSON.stringify(unansweredQuestions));
-
-    input.value = "";
-
-    setTimeout(() => {
-        addMessage(
-            "bot",
-            "Mohon tunggu, pertanyaan Anda akan segera kami jawab. Terimakasih."
-        );
-    }, 400);
-}
-
-async function sendQuestion(question){
-
-    addMessage("user", question);
-
-    try{
-
+    try {
         const API_URL =
-            location.hostname === "127.0.0.1" || location.hostname === "localhost"
-            ? "http://localhost:3000"
-            : "";
+            location.hostname === '127.0.0.1' || location.hostname === 'localhost'
+            ? 'http://localhost:3000'
+            : '';
 
-        const response = await fetch(
-            `${API_URL}/api/chat?q=${encodeURIComponent(question)}`
-        );
+        const response = await fetch(`${API_URL}/api/pertanyaan-lainnya`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ question })
+        });
 
         const data = await response.json();
 
-        addMessage("bot", data.reply);
+        if (!response.ok) {
+            throw new Error(data.error || 'Gagal menyimpan');
+        }
 
-    }catch(error){
-
-        addMessage("bot", "Maaf, server sedang tidak dapat dihubungkan.");
+        addMessage(
+            'bot',
+            'Pertanyaan Anda sudah tersimpan. Mohon tunggu, pertanyaan akan segera kami jawab. Terima kasih.'
+        );
+    } catch (error) {
+        addMessage(
+            'bot',
+            'Maaf, pertanyaan belum dapat disimpan karena server sedang bermasalah. Silakan coba kembali.'
+        );
 
         console.error(error);
     }
 }
 
+async function sendQuestion(question) {
+    addMessage('user', question);
+
+    try {
+        const API_URL =
+            location.hostname === '127.0.0.1' || location.hostname === 'localhost'
+            ? 'http://localhost:3000'
+            : '';
+
+        const response = await fetch(`${API_URL}/api/chat?q=${encodeURIComponent(question)}`);
+
+        const data = await response.json();
+
+        addMessage(
+            'bot',
+            data.reply || 'Maaf, jawaban belum tersedia. Pilih Lainnya untuk mengajukan pertanyaan.'
+        );
+    } catch (error) {
+        addMessage('bot', 'Maaf, server sedang tidak dapat dihubungkan.');
+
+        console.error(error);
+    }
+}
 </script>
 
 </body>
