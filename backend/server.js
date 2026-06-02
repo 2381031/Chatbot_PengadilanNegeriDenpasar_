@@ -15,11 +15,6 @@ const pool = new Pool({
   }
 });
 
-/*
-  CEK BACKEND VERCEL
-  Buka:
-  /api/health
-*/
 app.get('/api/health', (req, res) => {
   return res.status(200).json({
     status: 'OK',
@@ -27,11 +22,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-/*
-  CEK DATABASE NEON
-  Buka:
-  /api/db-test
-*/
 app.get('/api/db-test', async (req, res) => {
   try {
     if (!process.env.DATABASE_URL) {
@@ -57,10 +47,6 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
-/*
-  AMBIL SEMUA PERTANYAAN DARI TABEL fags
-  Dipakai untuk menampilkan tombol pertanyaan di chatbot
-*/
 app.get('/api/faqs', async (req, res) => {
   try {
     const result = await pool.query(
@@ -82,9 +68,6 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
-/*
-  CHATBOT MENJAWAB BERDASARKAN TABEL fags
-*/
 app.get('/api/chat', async (req, res) => {
   const q = (req.query.q || '').trim();
 
@@ -125,10 +108,6 @@ app.get('/api/chat', async (req, res) => {
   }
 });
 
-/*
-  SIMPAN PERTANYAAN DARI MENU LAINNYA
-  Masuk ke tabel pertanyaan_lainnya
-*/
 app.post('/api/pertanyaan-lainnya', async (req, res) => {
   const question = (req.body.question || '').trim();
 
@@ -161,9 +140,6 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
   }
 });
 
-/*
-  MELIHAT PERTANYAAN DARI MENU LAINNYA
-*/
 app.get('/api/pertanyaan-lainnya', async (req, res) => {
   try {
     const result = await pool.query(
@@ -185,16 +161,8 @@ app.get('/api/pertanyaan-lainnya', async (req, res) => {
   }
 });
 
-/*
-  PENTING UNTUK VERCEL
-  Jangan pakai app.listen() untuk production Vercel.
-*/
 module.exports = app;
 
-/*
-  Ini hanya untuk menjalankan lokal di laptop.
-  Tidak mengganggu Vercel.
-*/
 if (require.main === module) {
   const port = process.env.PORT || 3000;
 

@@ -128,7 +128,7 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    max-height: 185px;
+    max-height: 210px;
     overflow-y: auto;
     padding-right: 3px;
 }
@@ -359,54 +359,76 @@ function getShortLabel(question) {
     return labels[String(question).toLowerCase()] || question;
 }
 
-async function loadQuestionsFromDatabase() {
+const fallbackQuestions = [
+    'jam pelayanan',
+    'alamat kantor',
+    'kontak',
+    'jadwal sidang',
+    'layanan hukum',
+    'layanan e-court',
+    'buat user e-court',
+    'daftar perkara online',
+    'layanan umum dan keuangan',
+    'layanan tipikor',
+    'pelimpahan berkas tipikor',
+    'izin besuk tipikor',
+    'layanan phi',
+    'pendaftaran gugatan phi',
+    'surat kuasa phi',
+    'layanan kepaniteraan hukum',
+    'waarmerking surat',
+    'surat keterangan tidak tersangkut perkara',
+    'izin riset',
+    'legalisasi surat'
+];
+
+function renderQuestionButtons(questions) {
     const questionArea = document.getElementById('questionArea');
 
+    questionArea.innerHTML = '';
+
+    questions.forEach(question => {
+        const button = document.createElement('button');
+
+        button.className = 'question-btn';
+        button.textContent = getShortLabel(question);
+        button.title = question;
+
+        button.onclick = function() {
+            sendQuestion(question);
+        };
+
+        questionArea.appendChild(button);
+    });
+
+    const otherButton = document.createElement('button');
+
+    otherButton.className = 'question-btn other';
+    otherButton.textContent = 'Lainnya';
+    otherButton.onclick = showOtherQuestion;
+
+    questionArea.appendChild(otherButton);
+}
+
+async function loadQuestionsFromDatabase() {
     try {
         const API_URL = getApiUrl();
+
         const response = await fetch(`${API_URL}/api/faqs`);
         const result = await response.json();
 
-        if (!response.ok || !result.success) {
+        if (!response.ok || !result.success || !Array.isArray(result.data)) {
             throw new Error(result.error || 'Gagal mengambil daftar pertanyaan');
         }
 
-        questionArea.innerHTML = '';
+        const questions = result.data.map(item => item.question);
 
-        result.data.forEach(item => {
-            const button = document.createElement('button');
-
-            button.className = 'question-btn';
-            button.textContent = getShortLabel(item.question);
-            button.title = item.question;
-
-            button.onclick = function() {
-                sendQuestion(item.question);
-            };
-
-            questionArea.appendChild(button);
-        });
-
-        const otherButton = document.createElement('button');
-
-        otherButton.className = 'question-btn other';
-        otherButton.textContent = 'Lainnya';
-        otherButton.onclick = showOtherQuestion;
-
-        questionArea.appendChild(otherButton);
+        renderQuestionButtons(questions);
 
     } catch (error) {
-        console.error(error);
+        console.error('Gagal ambil pertanyaan dari database, pakai fallback:', error);
 
-        questionArea.innerHTML = `
-            <button class="question-btn" onclick="sendQuestion('jam pelayanan')">Jam Pelayanan</button>
-            <button class="question-btn" onclick="sendQuestion('alamat kantor')">Alamat Kantor</button>
-            <button class="question-btn" onclick="sendQuestion('kontak')">Kontak</button>
-            <button class="question-btn" onclick="sendQuestion('jadwal sidang')">Jadwal Sidang</button>
-            <button class="question-btn" onclick="sendQuestion('layanan e-court')">E-Court</button>
-            <button class="question-btn" onclick="sendQuestion('layanan tipikor')">Tipikor</button>
-            <button class="question-btn other" onclick="showOtherQuestion()">Lainnya</button>
-        `;
+        renderQuestionButtons(fallbackQuestions);
     }
 }
 
