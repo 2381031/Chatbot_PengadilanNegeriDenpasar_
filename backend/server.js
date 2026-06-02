@@ -15,6 +15,30 @@ const pool = new Pool({
   }
 });
 
+app.get('/api/faqs', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, question
+       FROM fags
+       ORDER BY id ASC`
+    );
+
+    return res.json({
+      success: true,
+      data: result.rows
+    });
+
+  } catch (error) {
+    console.error('Error /api/faqs:', error);
+
+    return res.status(500).json({
+      success: false,
+      error: 'Gagal mengambil daftar pertanyaan.',
+      detail: error.message
+    });
+  }
+});
+
 app.get('/api/chat', async (req, res) => {
   const q = (req.query.q || '').trim();
 
@@ -100,7 +124,10 @@ app.get('/api/pertanyaan-lainnya', async (req, res) => {
        ORDER BY created_at DESC`
     );
 
-    return res.json(result.rows);
+    return res.json({
+      success: true,
+      data: result.rows
+    });
 
   } catch (error) {
     console.error('Error get pertanyaan lainnya:', error);
@@ -139,4 +166,4 @@ if (require.main === module) {
   app.listen(port, () => {
     console.log(`Server berjalan di port ${port}`);
   });
-} 
+}

@@ -46,8 +46,8 @@ body {
     position: fixed;
     bottom: 100px;
     right: 25px;
-    width: 390px;
-    height: 620px;
+    width: 400px;
+    height: 640px;
     background: white;
     border-radius: 20px;
     overflow: hidden;
@@ -114,13 +114,13 @@ body {
 }
 
 .questions {
-    padding: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
     border-top: 1px solid #ddd;
     background: white;
-    max-height: 185px;
+    max-height: 210px;
     overflow-y: auto;
 }
 
@@ -128,11 +128,14 @@ body {
     border: none;
     background: #8b0000;
     color: white;
-    padding: 10px 14px;
-    border-radius: 20px;
+    padding: 10px 10px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 1.3;
     transition: .3s;
+    text-align: center;
+    min-height: 42px;
 }
 
 .question-btn:hover {
@@ -141,6 +144,8 @@ body {
 
 .question-btn.other {
     background: #374151;
+    grid-column: 1 / 3;
+    font-weight: bold;
 }
 
 .question-btn.other:hover {
@@ -230,14 +235,19 @@ body {
     }
 
     .questions {
+        grid-template-columns: 1fr;
+        max-height: 250px;
         padding: 12px;
         gap: 8px;
-        max-height: 210px;
     }
 
     .question-btn {
         font-size: 12px;
-        padding: 9px 12px;
+        padding: 10px 12px;
+    }
+
+    .question-btn.other {
+        grid-column: auto;
     }
 }
 </style>
@@ -269,51 +279,9 @@ body {
     </div>
 
     <div class="questions" id="questionArea">
-
-        <button class="question-btn" onclick="sendQuestion('layanan e-court')">
-            Layanan E-Court
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('buat user e-court')">
-            User E-Court
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('pendaftaran perkara online')">
-            Daftar Perkara Online
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('layanan umum dan keuangan')">
-            Umum & Keuangan
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('layanan tipikor')">
-            Tipikor
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('izin besuk tahanan')">
-            Izin Besuk
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('layanan phi')">
-            PHI
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('layanan kepaniteraan hukum')">
-            Kepaniteraan Hukum
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('legalisasi surat')">
-            Legalisasi Surat
-        </button>
-
-        <button class="question-btn" onclick="sendQuestion('permohonan surat keterangan')">
-            Surat Keterangan
-        </button>
-
         <button class="question-btn other" onclick="showOtherQuestion()">
             Lainnya
         </button>
-
     </div>
 
     <div class="chat-input-area" id="inputArea">
@@ -332,6 +300,14 @@ body {
 </div>
 
 <script>
+function getApiUrl() {
+    if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+        return 'http://localhost:3000';
+    }
+
+    return '';
+}
+
 function toggleChat() {
     const chat = document.getElementById('chatContainer');
 
@@ -366,6 +342,57 @@ function addMessage(type, text) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+function formatQuestionText(text) {
+    return String(text)
+        .replace(/\b\w/g, function(char) {
+            return char.toUpperCase();
+        });
+}
+
+async function loadQuestionsFromDatabase() {
+    const questionArea = document.getElementById('questionArea');
+
+    try {
+        const API_URL = getApiUrl();
+
+        const response = await fetch(`${API_URL}/api/faqs`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || 'Gagal mengambil daftar pertanyaan');
+        }
+
+        questionArea.innerHTML = '';
+
+        result.data.forEach(item => {
+            const button = document.createElement('button');
+            button.className = 'question-btn';
+            button.textContent = formatQuestionText(item.question);
+            button.onclick = function() {
+                sendQuestion(item.question);
+            };
+
+            questionArea.appendChild(button);
+        });
+
+        const otherButton = document.createElement('button');
+        otherButton.className = 'question-btn other';
+        otherButton.textContent = 'Lainnya';
+        otherButton.onclick = showOtherQuestion;
+
+        questionArea.appendChild(otherButton);
+
+    } catch (error) {
+        console.error(error);
+
+        questionArea.innerHTML = `
+            <button class="question-btn other" onclick="showOtherQuestion()">
+                Lainnya
+            </button>
+        `;
+    }
+}
+
 function showOtherQuestion() {
     addMessage('user', 'Lainnya');
 
@@ -392,36 +419,34 @@ async function submitOtherQuestion() {
     input.value = '';
 
     try {
-        const API_URL =
-            location.hostname === '127.0.0.1' || location.hostname === 'localhost'
-            ? 'http://localhost:3000'
-            : '';
+        const API_URL = getApiUrl();
 
         const response = await fetch(`${API_URL}/api/pertanyaan-lainnya`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ question })
+            body: JSON.stringify({ question: question })
         });
 
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || 'Gagal menyimpan');
+        if (!response.ok || !data.success) {
+            throw new Error(data.error || 'Gagal menyimpan pertanyaan');
         }
 
         addMessage(
             'bot',
             'Pertanyaan Anda sudah tersimpan. Mohon tunggu, pertanyaan akan segera kami jawab. Terima kasih.'
         );
+
     } catch (error) {
+        console.error(error);
+
         addMessage(
             'bot',
             'Maaf, pertanyaan belum dapat disimpan karena server sedang bermasalah. Silakan coba kembali.'
         );
-
-        console.error(error);
     }
 }
 
@@ -429,25 +454,27 @@ async function sendQuestion(question) {
     addMessage('user', question);
 
     try {
-        const API_URL =
-            location.hostname === '127.0.0.1' || location.hostname === 'localhost'
-            ? 'http://localhost:3000'
-            : '';
+        const API_URL = getApiUrl();
 
         const response = await fetch(`${API_URL}/api/chat?q=${encodeURIComponent(question)}`);
-
         const data = await response.json();
 
         addMessage(
             'bot',
             data.reply || 'Maaf, jawaban belum tersedia. Pilih Lainnya untuk mengajukan pertanyaan.'
         );
-    } catch (error) {
-        addMessage('bot', 'Maaf, server sedang tidak dapat dihubungkan.');
 
+    } catch (error) {
         console.error(error);
+
+        addMessage(
+            'bot',
+            'Maaf, server sedang tidak dapat dihubungkan.'
+        );
     }
 }
+
+document.addEventListener('DOMContentLoaded', loadQuestionsFromDatabase);
 </script>
 
 </body>
