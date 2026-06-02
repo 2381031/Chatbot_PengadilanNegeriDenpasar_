@@ -15,6 +15,52 @@ const pool = new Pool({
   }
 });
 
+/*
+  CEK BACKEND VERCEL
+  Buka:
+  /api/health
+*/
+app.get('/api/health', (req, res) => {
+  return res.status(200).json({
+    status: 'OK',
+    message: 'Backend Vercel berjalan'
+  });
+});
+
+/*
+  CEK DATABASE NEON
+  Buka:
+  /api/db-test
+*/
+app.get('/api/db-test', async (req, res) => {
+  try {
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({
+        status: 'ERROR',
+        message: 'DATABASE_URL belum ada di Vercel'
+      });
+    }
+
+    const result = await pool.query('SELECT NOW() AS waktu');
+
+    return res.status(200).json({
+      status: 'OK',
+      database: 'connected',
+      waktu: result.rows[0].waktu
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 'ERROR',
+      database: 'not connected',
+      detail: error.message
+    });
+  }
+});
+
+/*
+  AMBIL SEMUA PERTANYAAN DARI TABEL fags
+  Dipakai untuk menampilkan tombol pertanyaan di chatbot
+*/
 app.get('/api/faqs', async (req, res) => {
   try {
     const result = await pool.query(
@@ -23,14 +69,11 @@ app.get('/api/faqs', async (req, res) => {
        ORDER BY id ASC`
     );
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       data: result.rows
     });
-
   } catch (error) {
-    console.error('Error /api/faqs:', error);
-
     return res.status(500).json({
       success: false,
       error: 'Gagal mengambil daftar pertanyaan.',
@@ -39,6 +82,9 @@ app.get('/api/faqs', async (req, res) => {
   }
 });
 
+/*
+  CHATBOT MENJAWAB BERDASARKAN TABEL fags
+*/
 app.get('/api/chat', async (req, res) => {
   const q = (req.query.q || '').trim();
 
@@ -63,24 +109,26 @@ app.get('/api/chat', async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res.json({
+      return res.status(200).json({
         reply: 'Maaf, jawaban untuk pertanyaan tersebut belum tersedia. Silakan pilih menu Lainnya untuk mengajukan pertanyaan kepada petugas.'
       });
     }
 
-    return res.json({
+    return res.status(200).json({
       reply: result.rows[0].answer
     });
-
   } catch (error) {
-    console.error('Error /api/chat:', error);
-
     return res.status(500).json({
-      reply: 'Maaf, server sedang mengalami gangguan.'
+      reply: 'Maaf, server sedang mengalami gangguan.',
+      detail: error.message
     });
   }
 });
 
+/*
+  SIMPAN PERTANYAAN DARI MENU LAINNYA
+  Masuk ke tabel pertanyaan_lainnya
+*/
 app.post('/api/pertanyaan-lainnya', async (req, res) => {
   const question = (req.body.question || '').trim();
 
@@ -104,10 +152,7 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
       message: 'Pertanyaan berhasil disimpan.',
       data: result.rows[0]
     });
-
   } catch (error) {
-    console.error('Error /api/pertanyaan-lainnya:', error);
-
     return res.status(500).json({
       success: false,
       error: 'Gagal menyimpan pertanyaan.',
@@ -116,6 +161,9 @@ app.post('/api/pertanyaan-lainnya', async (req, res) => {
   }
 });
 
+/*
+  MELIHAT PERTANYAAN DARI MENU LAINNYA
+*/
 app.get('/api/pertanyaan-lainnya', async (req, res) => {
   try {
     const result = await pool.query(
@@ -124,14 +172,11 @@ app.get('/api/pertanyaan-lainnya', async (req, res) => {
        ORDER BY created_at DESC`
     );
 
-    return res.json({
+    return res.status(200).json({
       success: true,
       data: result.rows
     });
-
   } catch (error) {
-    console.error('Error get pertanyaan lainnya:', error);
-
     return res.status(500).json({
       success: false,
       error: 'Gagal mengambil data pertanyaan.',
@@ -140,30 +185,20 @@ app.get('/api/pertanyaan-lainnya', async (req, res) => {
   }
 });
 
-app.get('/api/health', async (req, res) => {
-  try {
-    await pool.query('SELECT NOW()');
-
-    return res.json({
-      status: 'OK',
-      database: 'connected'
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      status: 'ERROR',
-      database: 'not connected',
-      detail: error.message
-    });
-  }
-});
-
+/*
+  PENTING UNTUK VERCEL
+  Jangan pakai app.listen() untuk production Vercel.
+*/
 module.exports = app;
 
+/*
+  Ini hanya untuk menjalankan lokal di laptop.
+  Tidak mengganggu Vercel.
+*/
 if (require.main === module) {
   const port = process.env.PORT || 3000;
 
   app.listen(port, () => {
-    console.log(`Server berjalan di port ${port}`);
+    console.log(`Server lokal berjalan di port ${port}`);
   });
 }

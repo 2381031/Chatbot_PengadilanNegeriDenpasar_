@@ -28,42 +28,41 @@ body {
     height: 65px;
     border-radius: 50%;
     border: none;
-    background: #8b0000;
+    background: #9b0000;
     color: white;
     font-size: 28px;
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(0,0,0,.3);
-    z-index: 999;
-    transition: .3s;
+    z-index: 9999;
 }
 
 .chat-toggle:hover {
-    transform: scale(1.08);
-    background: #a30000;
+    background: #b30000;
+    transform: scale(1.05);
 }
 
 .chat-container {
     position: fixed;
     bottom: 100px;
     right: 25px;
-    width: 400px;
+    width: 410px;
     height: 640px;
     background: white;
-    border-radius: 20px;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    box-shadow: 0 12px 35px rgba(0,0,0,.22);
     display: none;
     flex-direction: column;
-    z-index: 999;
+    z-index: 9998;
 }
 
 .chat-header {
-    background: #8b0000;
+    background: #9b0000;
     color: white;
     padding: 18px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 14px;
 }
 
 .chat-header img {
@@ -76,11 +75,12 @@ body {
 
 .header-text h2 {
     font-size: 18px;
+    line-height: 1.1;
 }
 
 .header-text p {
     font-size: 13px;
-    opacity: .9;
+    opacity: .95;
 }
 
 #chatbox {
@@ -91,7 +91,7 @@ body {
 }
 
 .message {
-    margin-bottom: 15px;
+    margin-bottom: 13px;
     padding: 12px 15px;
     border-radius: 15px;
     max-width: 88%;
@@ -103,39 +103,47 @@ body {
 .bot {
     background: #e5e7eb;
     color: #111827;
-    white-space: normal;
-    line-height: 1.6;
 }
 
 .user {
-    background: #8b0000;
+    background: #9b0000;
     color: white;
     margin-left: auto;
 }
 
-.questions {
-    padding: 12px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+.questions-wrapper {
     border-top: 1px solid #ddd;
-    background: white;
-    max-height: 210px;
+    background: #fff;
+    padding: 10px 12px 12px;
+}
+
+.questions-title {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.questions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    max-height: 185px;
     overflow-y: auto;
+    padding-right: 3px;
 }
 
 .question-btn {
     border: none;
-    background: #8b0000;
+    background: #9b0000;
     color: white;
-    padding: 10px 10px;
+    padding: 9px 8px;
     border-radius: 12px;
     cursor: pointer;
     font-size: 12px;
-    line-height: 1.3;
-    transition: .3s;
+    line-height: 1.25;
+    min-height: 40px;
     text-align: center;
-    min-height: 42px;
 }
 
 .question-btn:hover {
@@ -163,18 +171,18 @@ body {
 .chat-input-area input {
     flex: 1;
     border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 10px 14px;
+    border-radius: 22px;
+    padding: 11px 14px;
     outline: none;
     font-size: 13px;
 }
 
 .chat-input-area button {
     border: none;
-    background: #8b0000;
+    background: #9b0000;
     color: white;
-    width: 42px;
-    height: 42px;
+    min-width: 43px;
+    height: 43px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 15px;
@@ -187,7 +195,7 @@ body {
 
 #chatbox::-webkit-scrollbar-thumb,
 .questions::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: #c7c7c7;
     border-radius: 10px;
 }
 
@@ -208,46 +216,17 @@ body {
         font-size: 24px;
     }
 
-    .chat-header {
-        padding: 15px;
-    }
-
-    .chat-header img {
-        width: 45px;
-        height: 45px;
-    }
-
-    .header-text h2 {
-        font-size: 16px;
-    }
-
-    .header-text p {
-        font-size: 12px;
-    }
-
-    #chatbox {
-        padding: 12px;
-    }
-
-    .message {
-        max-width: 90%;
-        font-size: 13px;
-    }
-
     .questions {
         grid-template-columns: 1fr;
-        max-height: 250px;
-        padding: 12px;
-        gap: 8px;
-    }
-
-    .question-btn {
-        font-size: 12px;
-        padding: 10px 12px;
+        max-height: 230px;
     }
 
     .question-btn.other {
         grid-column: auto;
+    }
+
+    .message {
+        font-size: 13px;
     }
 }
 </style>
@@ -263,7 +242,6 @@ body {
 
     <div class="chat-header">
         <img src="Logo.png" alt="Logo PN Denpasar">
-
         <div class="header-text">
             <h2>PN Denpasar</h2>
             <p>Pelayanan Informasi Online</p>
@@ -278,10 +256,14 @@ body {
         </div>
     </div>
 
-    <div class="questions" id="questionArea">
-        <button class="question-btn other" onclick="showOtherQuestion()">
-            Lainnya
-        </button>
+    <div class="questions-wrapper">
+        <div class="questions-title">Daftar Pertanyaan</div>
+
+        <div class="questions" id="questionArea">
+            <button class="question-btn other" onclick="showOtherQuestion()">
+                Lainnya
+            </button>
+        </div>
     </div>
 
     <div class="chat-input-area" id="inputArea">
@@ -342,11 +324,39 @@ function addMessage(type, text) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-function formatQuestionText(text) {
-    return String(text)
-        .replace(/\b\w/g, function(char) {
-            return char.toUpperCase();
-        });
+function getShortLabel(question) {
+    const labels = {
+        'jam pelayanan': 'Jam Pelayanan',
+        'alamat kantor': 'Alamat Kantor',
+        'kontak': 'Kontak',
+        'jadwal sidang': 'Jadwal Sidang',
+        'layanan hukum': 'Layanan Hukum',
+
+        'layanan e-court': 'E-Court',
+        'buat user e-court': 'User E-Court',
+        'daftar perkara online': 'Daftar Online',
+        'pendaftaran perkara online': 'Daftar Online',
+
+        'layanan umum dan keuangan': 'Umum & Keuangan',
+
+        'layanan tipikor': 'Tipikor',
+        'pelimpahan berkas tipikor': 'Berkas Tipikor',
+        'izin besuk tipikor': 'Izin Besuk',
+        'izin besuk tahanan': 'Izin Besuk',
+
+        'layanan phi': 'PHI',
+        'pendaftaran gugatan phi': 'Gugatan PHI',
+        'surat kuasa phi': 'Surat Kuasa PHI',
+
+        'layanan kepaniteraan hukum': 'Kepaniteraan Hukum',
+        'waarmerking surat': 'Waarmerking',
+        'surat keterangan tidak tersangkut perkara': 'Surat Keterangan',
+        'permohonan surat keterangan': 'Surat Keterangan',
+        'izin riset': 'Izin Riset',
+        'legalisasi surat': 'Legalisasi Surat'
+    };
+
+    return labels[String(question).toLowerCase()] || question;
 }
 
 async function loadQuestionsFromDatabase() {
@@ -354,7 +364,6 @@ async function loadQuestionsFromDatabase() {
 
     try {
         const API_URL = getApiUrl();
-
         const response = await fetch(`${API_URL}/api/faqs`);
         const result = await response.json();
 
@@ -366,8 +375,11 @@ async function loadQuestionsFromDatabase() {
 
         result.data.forEach(item => {
             const button = document.createElement('button');
+
             button.className = 'question-btn';
-            button.textContent = formatQuestionText(item.question);
+            button.textContent = getShortLabel(item.question);
+            button.title = item.question;
+
             button.onclick = function() {
                 sendQuestion(item.question);
             };
@@ -376,6 +388,7 @@ async function loadQuestionsFromDatabase() {
         });
 
         const otherButton = document.createElement('button');
+
         otherButton.className = 'question-btn other';
         otherButton.textContent = 'Lainnya';
         otherButton.onclick = showOtherQuestion;
@@ -386,9 +399,13 @@ async function loadQuestionsFromDatabase() {
         console.error(error);
 
         questionArea.innerHTML = `
-            <button class="question-btn other" onclick="showOtherQuestion()">
-                Lainnya
-            </button>
+            <button class="question-btn" onclick="sendQuestion('jam pelayanan')">Jam Pelayanan</button>
+            <button class="question-btn" onclick="sendQuestion('alamat kantor')">Alamat Kantor</button>
+            <button class="question-btn" onclick="sendQuestion('kontak')">Kontak</button>
+            <button class="question-btn" onclick="sendQuestion('jadwal sidang')">Jadwal Sidang</button>
+            <button class="question-btn" onclick="sendQuestion('layanan e-court')">E-Court</button>
+            <button class="question-btn" onclick="sendQuestion('layanan tipikor')">Tipikor</button>
+            <button class="question-btn other" onclick="showOtherQuestion()">Lainnya</button>
         `;
     }
 }
@@ -451,7 +468,7 @@ async function submitOtherQuestion() {
 }
 
 async function sendQuestion(question) {
-    addMessage('user', question);
+    addMessage('user', getShortLabel(question));
 
     try {
         const API_URL = getApiUrl();
