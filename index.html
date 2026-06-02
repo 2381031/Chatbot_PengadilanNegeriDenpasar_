@@ -45,8 +45,8 @@ body {
     position: fixed;
     bottom: 100px;
     right: 25px;
-    width: 410px;
-    height: 640px;
+    width: 420px;
+    height: 650px;
     background: white;
     border-radius: 22px;
     overflow: hidden;
@@ -128,7 +128,7 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    max-height: 210px;
+    max-height: 220px;
     overflow-y: auto;
     padding-right: 3px;
 }
@@ -142,7 +142,7 @@ body {
     cursor: pointer;
     font-size: 12px;
     line-height: 1.25;
-    min-height: 40px;
+    min-height: 42px;
     text-align: center;
 }
 
@@ -218,7 +218,7 @@ body {
 
     .questions {
         grid-template-columns: 1fr;
-        max-height: 230px;
+        max-height: 250px;
     }
 
     .question-btn.other {
@@ -260,9 +260,7 @@ body {
         <div class="questions-title">Daftar Pertanyaan</div>
 
         <div class="questions" id="questionArea">
-            <button class="question-btn other" onclick="showOtherQuestion()">
-                Lainnya
-            </button>
+            <!-- Tombol pertanyaan otomatis muncul dari JavaScript -->
         </div>
     </div>
 
@@ -289,6 +287,105 @@ function getApiUrl() {
 
     return '';
 }
+
+/*
+  SEMUA PERTANYAAN DAN JAWABAN DIMASUKKAN DI INDEX
+  Jadi tetap jalan walaupun API/database sedang error.
+*/
+const localFaqs = [
+    {
+        question: 'Apa jam pelayanan Pengadilan Negeri Denpasar?',
+        answer: 'Dengan hormat, jam pelayanan Pengadilan Negeri Denpasar dilaksanakan pada hari kerja, yaitu Senin sampai Jumat sesuai jam operasional kantor. Untuk pelayanan PTSP, pengunjung dapat datang langsung ke meja pelayanan Pengadilan Negeri Denpasar.'
+    },
+    {
+        question: 'Di mana alamat Pengadilan Negeri Denpasar?',
+        answer: 'Dengan hormat, alamat kantor Pengadilan Negeri Denpasar dapat dicari melalui Google Maps dengan kata kunci Pengadilan Negeri Denpasar. Pengunjung juga dapat datang langsung ke kantor untuk mendapatkan layanan PTSP.'
+    },
+    {
+        question: 'Bagaimana cara menghubungi Pengadilan Negeri Denpasar?',
+        answer: 'Dengan hormat, untuk informasi kontak Pengadilan Negeri Denpasar, pengunjung dapat menghubungi layanan informasi resmi atau datang langsung ke meja PTSP Pengadilan Negeri Denpasar.'
+    },
+    {
+        question: 'Bagaimana cara melihat jadwal sidang?',
+        answer: 'Informasi jadwal sidang dapat dilihat melalui Sistem Informasi Penelusuran Perkara atau SIPP Pengadilan Negeri Denpasar. Pengunjung juga dapat menanyakan langsung kepada petugas PTSP.'
+    },
+    {
+        question: 'Apa saja layanan hukum yang tersedia?',
+        answer: 'Layanan hukum yang tersedia meliputi informasi perkara, surat keterangan, legalisasi surat, pendaftaran surat kuasa, layanan e-Court, serta layanan kepaniteraan lainnya sesuai ketentuan yang berlaku.'
+    },
+    {
+        question: 'Apa itu layanan E-Court?',
+        answer: 'Layanan e-Court adalah layanan peradilan secara elektronik yang meliputi pembuatan user dan password e-Court, pendaftaran permohonan, gugatan, gugatan sederhana, bantahan secara online, pendaftaran email advokat tergugat untuk persidangan online atau e-Litigasi, serta informasi lain terkait e-Court.'
+    },
+    {
+        question: 'Bagaimana langkah-langkah membuat user E-Court?',
+        answer: 'Langkah-langkah membuat user E-Court adalah: pertama, datang ke layanan e-Court atau PTSP Pengadilan Negeri Denpasar. Kedua, siapkan data atau dokumen yang diperlukan. Ketiga, petugas akan membantu proses pembuatan user dan password pada aplikasi e-Court sesuai ketentuan yang berlaku.'
+    },
+    {
+        question: 'Bagaimana cara mendaftarkan perkara secara online?',
+        answer: 'Pendaftaran perkara secara online dapat dilakukan melalui layanan e-Court. Jenis perkara yang dapat didaftarkan meliputi permohonan, gugatan, gugatan sederhana, dan bantahan sesuai ketentuan yang berlaku.'
+    },
+    {
+        question: 'Apa saja layanan Sub Bagian Umum dan Keuangan?',
+        answer: 'Layanan PTSP Sub Bagian Umum dan Keuangan menerima dan menyerahkan seluruh surat-surat yang ditujukan kepada Pengadilan Negeri Denpasar maupun surat-surat yang dikeluarkan oleh Pengadilan Negeri Denpasar.'
+    },
+    {
+        question: 'Apa saja layanan Kepaniteraan Muda Tipikor?',
+        answer: 'Layanan Kepaniteraan Muda Tipikor meliputi penerimaan pelimpahan berkas perkara Tipikor dari penuntut umum atau penyidik, permohonan perlawanan, banding, kasasi, peninjauan kembali dan grasi, memori atau kontra memori, pencabutan permohonan, pembantaran, izin besuk, izin atau persetujuan penyitaan, penggeledahan, perpanjangan penahanan secara online, serta informasi penyelesaian perkara Tipikor.'
+    },
+    {
+        question: 'Bagaimana proses pelimpahan berkas perkara Tipikor?',
+        answer: 'Pelimpahan berkas perkara Tipikor dari penuntut umum atau penyidik dilayani melalui Kepaniteraan Muda Tipikor Pengadilan Negeri Denpasar sesuai prosedur yang berlaku.'
+    },
+    {
+        question: 'Bagaimana cara mengajukan izin besuk perkara Tipikor?',
+        answer: 'Permohonan izin besuk untuk perkara Tipikor dapat diajukan melalui Kepaniteraan Muda Tipikor dengan mengikuti prosedur dan persyaratan yang berlaku.'
+    },
+    {
+        question: 'Apa itu layanan PHI?',
+        answer: 'Layanan PHI adalah layanan Kepaniteraan Muda PHI yang menerima pendaftaran perkara gugatan PHI dan upaya hukum perkara PHI, serta menerima pendaftaran surat kuasa khusus maupun kuasa insidentil untuk perkara PHI.'
+    },
+    {
+        question: 'Bagaimana cara mendaftarkan gugatan PHI?',
+        answer: 'Pendaftaran perkara gugatan PHI dan upaya hukum perkara PHI dapat dilakukan melalui layanan Kepaniteraan Muda PHI Pengadilan Negeri Denpasar sesuai prosedur yang berlaku.'
+    },
+    {
+        question: 'Bagaimana cara mendaftarkan surat kuasa PHI?',
+        answer: 'Pendaftaran surat kuasa khusus maupun kuasa insidentil untuk perkara PHI dilayani melalui Kepaniteraan Muda PHI dengan membawa dokumen yang diperlukan.'
+    },
+    {
+        question: 'Apa saja layanan Kepaniteraan Muda Hukum?',
+        answer: 'Layanan Kepaniteraan Muda Hukum meliputi permohonan waarmerking surat-surat, pembuatan surat keterangan tidak tersangkut perkara pidana dan perdata, permohonan surat izin riset, permohonan keterangan data perkara, turunan putusan perkara yang telah berkekuatan hukum tetap, pendaftaran surat kuasa, legalisasi surat, serta layanan lain yang berhubungan dengan pelayanan kepaniteraan hukum.'
+    },
+    {
+        question: 'Bagaimana cara mengajukan waarmerking surat?',
+        answer: 'Permohonan waarmerking surat-surat dapat diajukan melalui Kepaniteraan Muda Hukum Pengadilan Negeri Denpasar sesuai prosedur dan persyaratan yang berlaku.'
+    },
+    {
+        question: 'Bagaimana cara membuat surat keterangan tidak tersangkut perkara?',
+        answer: 'Pembuatan surat keterangan tidak tersangkut perkara pidana dan perdata dapat diajukan melalui Kepaniteraan Muda Hukum dengan membawa persyaratan yang diperlukan.'
+    },
+    {
+        question: 'Bagaimana cara mengajukan izin riset?',
+        answer: 'Permohonan surat izin riset dapat diajukan melalui Kepaniteraan Muda Hukum Pengadilan Negeri Denpasar dengan membawa dokumen atau persyaratan yang diperlukan.'
+    },
+    {
+        question: 'Bagaimana cara mengajukan legalisasi surat?',
+        answer: 'Permohonan legalisasi surat dapat dilayani melalui Kepaniteraan Muda Hukum Pengadilan Negeri Denpasar sesuai prosedur dan persyaratan yang berlaku.'
+    },
+    {
+        question: 'Kenapa perlu menggunakan layanan E-Court?',
+        answer: 'Layanan E-Court digunakan untuk mempermudah proses pendaftaran perkara secara elektronik sehingga pengguna dapat melakukan pendaftaran permohonan, gugatan, gugatan sederhana, dan bantahan secara online sesuai ketentuan yang berlaku.'
+    },
+    {
+        question: 'Kenapa perlu datang ke PTSP?',
+        answer: 'PTSP atau Pelayanan Terpadu Satu Pintu membantu pengunjung mendapatkan layanan dan informasi secara lebih terarah, mulai dari layanan kepaniteraan, hukum, e-Court, hingga informasi perkara.'
+    },
+    {
+        question: 'Kenapa surat keterangan harus diajukan melalui Kepaniteraan Muda Hukum?',
+        answer: 'Surat keterangan seperti keterangan tidak tersangkut perkara pidana dan perdata diproses melalui Kepaniteraan Muda Hukum karena bagian tersebut menangani layanan administrasi hukum sesuai kewenangannya.'
+    }
+];
 
 function toggleChat() {
     const chat = document.getElementById('chatContainer');
@@ -324,85 +421,33 @@ function addMessage(type, text) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-function getShortLabel(question) {
-    const labels = {
-        'jam pelayanan': 'Jam Pelayanan',
-        'alamat kantor': 'Alamat Kantor',
-        'kontak': 'Kontak',
-        'jadwal sidang': 'Jadwal Sidang',
-        'layanan hukum': 'Layanan Hukum',
+function shortButtonText(question) {
+    if (question.length > 45) {
+        return question.substring(0, 45) + '...';
+    }
 
-        'layanan e-court': 'E-Court',
-        'buat user e-court': 'User E-Court',
-        'daftar perkara online': 'Daftar Online',
-        'pendaftaran perkara online': 'Daftar Online',
-
-        'layanan umum dan keuangan': 'Umum & Keuangan',
-
-        'layanan tipikor': 'Tipikor',
-        'pelimpahan berkas tipikor': 'Berkas Tipikor',
-        'izin besuk tipikor': 'Izin Besuk',
-        'izin besuk tahanan': 'Izin Besuk',
-
-        'layanan phi': 'PHI',
-        'pendaftaran gugatan phi': 'Gugatan PHI',
-        'surat kuasa phi': 'Surat Kuasa PHI',
-
-        'layanan kepaniteraan hukum': 'Kepaniteraan Hukum',
-        'waarmerking surat': 'Waarmerking',
-        'surat keterangan tidak tersangkut perkara': 'Surat Keterangan',
-        'permohonan surat keterangan': 'Surat Keterangan',
-        'izin riset': 'Izin Riset',
-        'legalisasi surat': 'Legalisasi Surat'
-    };
-
-    return labels[String(question).toLowerCase()] || question;
+    return question;
 }
 
-const fallbackQuestions = [
-    'jam pelayanan',
-    'alamat kantor',
-    'kontak',
-    'jadwal sidang',
-    'layanan hukum',
-    'layanan e-court',
-    'buat user e-court',
-    'daftar perkara online',
-    'layanan umum dan keuangan',
-    'layanan tipikor',
-    'pelimpahan berkas tipikor',
-    'izin besuk tipikor',
-    'layanan phi',
-    'pendaftaran gugatan phi',
-    'surat kuasa phi',
-    'layanan kepaniteraan hukum',
-    'waarmerking surat',
-    'surat keterangan tidak tersangkut perkara',
-    'izin riset',
-    'legalisasi surat'
-];
-
-function renderQuestionButtons(questions) {
+function renderQuestionButtons(faqs) {
     const questionArea = document.getElementById('questionArea');
-
     questionArea.innerHTML = '';
 
-    questions.forEach(question => {
+    faqs.forEach(item => {
         const button = document.createElement('button');
 
         button.className = 'question-btn';
-        button.textContent = getShortLabel(question);
-        button.title = question;
+        button.textContent = shortButtonText(item.question);
+        button.title = item.question;
 
         button.onclick = function() {
-            sendQuestion(question);
+            sendQuestion(item.question);
         };
 
         questionArea.appendChild(button);
     });
 
     const otherButton = document.createElement('button');
-
     otherButton.className = 'question-btn other';
     otherButton.textContent = 'Lainnya';
     otherButton.onclick = showOtherQuestion;
@@ -410,7 +455,11 @@ function renderQuestionButtons(questions) {
     questionArea.appendChild(otherButton);
 }
 
-async function loadQuestionsFromDatabase() {
+async function loadQuestions() {
+    /*
+      Coba ambil dari database.
+      Kalau gagal, pakai localFaqs yang sudah ada di index.
+    */
     try {
         const API_URL = getApiUrl();
 
@@ -418,18 +467,43 @@ async function loadQuestionsFromDatabase() {
         const result = await response.json();
 
         if (!response.ok || !result.success || !Array.isArray(result.data)) {
-            throw new Error(result.error || 'Gagal mengambil daftar pertanyaan');
+            throw new Error('Gagal mengambil dari database');
         }
 
-        const questions = result.data.map(item => item.question);
+        const dbFaqs = result.data.map(item => {
+            return {
+                question: item.question,
+                answer: ''
+            };
+        });
 
-        renderQuestionButtons(questions);
+        renderQuestionButtons(dbFaqs);
 
     } catch (error) {
-        console.error('Gagal ambil pertanyaan dari database, pakai fallback:', error);
-
-        renderQuestionButtons(fallbackQuestions);
+        console.log('Memakai pertanyaan lokal dari index.html');
+        renderQuestionButtons(localFaqs);
     }
+}
+
+function findLocalAnswer(question) {
+    const selected = localFaqs.find(item => {
+        return item.question.toLowerCase() === question.toLowerCase();
+    });
+
+    if (selected) {
+        return selected.answer;
+    }
+
+    const similar = localFaqs.find(item => {
+        return item.question.toLowerCase().includes(question.toLowerCase()) ||
+               question.toLowerCase().includes(item.question.toLowerCase());
+    });
+
+    if (similar) {
+        return similar.answer;
+    }
+
+    return null;
 }
 
 function showOtherQuestion() {
@@ -457,6 +531,10 @@ async function submitOtherQuestion() {
     addMessage('user', question);
     input.value = '';
 
+    /*
+      Coba simpan ke database.
+      Kalau server belum aktif, tetap tampilkan pesan menunggu.
+    */
     try {
         const API_URL = getApiUrl();
 
@@ -471,7 +549,7 @@ async function submitOtherQuestion() {
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-            throw new Error(data.error || 'Gagal menyimpan pertanyaan');
+            throw new Error('Gagal simpan ke database');
         }
 
         addMessage(
@@ -480,40 +558,47 @@ async function submitOtherQuestion() {
         );
 
     } catch (error) {
-        console.error(error);
-
         addMessage(
             'bot',
-            'Maaf, pertanyaan belum dapat disimpan karena server sedang bermasalah. Silakan coba kembali.'
+            'Pertanyaan Anda sudah diterima. Jika server database belum aktif, silakan hubungi petugas PTSP untuk memastikan pertanyaan tersimpan.'
         );
     }
 }
 
 async function sendQuestion(question) {
-    addMessage('user', getShortLabel(question));
+    addMessage('user', question);
 
+    /*
+      Coba jawab dari server/database.
+      Kalau gagal, jawab dari localFaqs di index.
+    */
     try {
         const API_URL = getApiUrl();
 
         const response = await fetch(`${API_URL}/api/chat?q=${encodeURIComponent(question)}`);
         const data = await response.json();
 
-        addMessage(
-            'bot',
-            data.reply || 'Maaf, jawaban belum tersedia. Pilih Lainnya untuk mengajukan pertanyaan.'
-        );
+        if (!response.ok || !data.reply) {
+            throw new Error('Gagal ambil jawaban server');
+        }
+
+        addMessage('bot', data.reply);
 
     } catch (error) {
-        console.error(error);
+        const localAnswer = findLocalAnswer(question);
 
-        addMessage(
-            'bot',
-            'Maaf, server sedang tidak dapat dihubungkan.'
-        );
+        if (localAnswer) {
+            addMessage('bot', localAnswer);
+        } else {
+            addMessage(
+                'bot',
+                'Maaf, jawaban untuk pertanyaan tersebut belum tersedia. Silakan pilih menu Lainnya untuk mengajukan pertanyaan kepada petugas.'
+            );
+        }
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadQuestionsFromDatabase);
+document.addEventListener('DOMContentLoaded', loadQuestions);
 </script>
 
 </body>

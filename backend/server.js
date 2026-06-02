@@ -50,7 +50,7 @@ app.get('/api/db-test', async (req, res) => {
 app.get('/api/faqs', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, question
+      `SELECT id, question, answer
        FROM fags
        ORDER BY id ASC`
     );
