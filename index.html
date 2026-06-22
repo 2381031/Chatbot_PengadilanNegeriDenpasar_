@@ -381,7 +381,7 @@ body {
     </div>
 
     <div class="questions-wrapper">
-        <div class="questions-title">Daftar Pertanyaan</div>
+        <div class="questions-title" id="questionTitle">Daftar Pertanyaan</div>
         <div class="questions" id="questionArea">
             <div class="loading-text">Memuat pertanyaan...</div>
         </div>
@@ -407,7 +407,6 @@ function getApiUrl() {
     if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
         return 'http://localhost:3000';
     }
-
     return '';
 }
 
@@ -422,7 +421,6 @@ function toggleChat() {
         toggle.style.display = 'flex';
     } else {
         chat.style.display = 'flex';
-
         if (window.innerWidth <= 480) {
             toggle.style.display = 'none';
         }
@@ -452,6 +450,15 @@ function addMessage(type, text) {
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
+function cleanText(value = '') {
+    return String(value)
+        .toLowerCase()
+        .trim()
+        .replace(/[\u2018\u2019']/g, '')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ');
+}
+
 function shortButtonText(question) {
     if (!question) return '';
 
@@ -462,11 +469,38 @@ function shortButtonText(question) {
     return question.length > 48 ? question.substring(0, 48) + '...' : question;
 }
 
+function normalizeFaq(item) {
+    const id = item.id ?? item.id_serial ?? item.no ?? '';
+    const question = item.question ?? item.question_text ?? item.pertanyaan ?? item.text_question ?? '';
+    const answer = item.answer ?? item.answer_text ?? item.jawaban ?? item.text_answer ?? '';
+
+    return {
+        id: id === null || id === undefined ? '' : String(id).trim(),
+        question: String(question || '').trim(),
+        answer: String(answer || '').trim()
+    };
+}
+
+function sortFaqs(list) {
+    return list.slice().sort((a, b) => {
+        const aId = Number(a.id);
+        const bId = Number(b.id);
+
+        if (!Number.isNaN(aId) && !Number.isNaN(bId)) {
+            return aId - bId;
+        }
+
+        return String(a.id).localeCompare(String(b.id));
+    });
+}
+
 function renderQuestionButtons() {
     const questionArea = document.getElementById('questionArea');
+    const questionTitle = document.getElementById('questionTitle');
     questionArea.innerHTML = '';
 
     if (!faqs || faqs.length === 0) {
+        questionTitle.textContent = 'Daftar Pertanyaan';
         questionArea.innerHTML = `
             <div class="loading-text">
                 Pertanyaan belum tersedia.
@@ -475,11 +509,14 @@ function renderQuestionButtons() {
         return;
     }
 
+    questionTitle.textContent = `Daftar Pertanyaan (${faqs.length})`;
+
     faqs.forEach(item => {
         const button = document.createElement('button');
-
         button.className = 'question-btn';
-        button.textContent = shortButtonText(item.question);
+
+        const label = item.id ? `${item.id}. ${shortButtonText(item.question)}` : shortButtonText(item.question);
+        button.textContent = label;
         button.title = item.question;
 
         button.onclick = function() {
@@ -499,12 +536,14 @@ function renderQuestionButtons() {
 
 async function loadQuestions() {
     const questionArea = document.getElementById('questionArea');
+    const questionTitle = document.getElementById('questionTitle');
 
     questionArea.innerHTML = `
         <div class="loading-text">
             Memuat pertanyaan...
         </div>
     `;
+    questionTitle.textContent = 'Daftar Pertanyaan';
 
     try {
         const API_URL = getApiUrl();
@@ -523,13 +562,16 @@ async function loadQuestions() {
             throw new Error(result.detail || 'Gagal mengambil data FAQ');
         }
 
-        if (result.success && Array.isArray(result.data)) {
-            faqs = result.data;
+        let rawData = [];
+        if (result && result.success && Array.isArray(result.data)) {
+            rawData = result.data;
         } else if (Array.isArray(result)) {
-            faqs = result;
+            rawData = result;
         } else {
             throw new Error('Format data FAQ tidak sesuai');
         }
+
+        faqs = sortFaqs(rawData.map(normalizeFaq).filter(item => item.question && item.answer));
 
         renderQuestionButtons();
 

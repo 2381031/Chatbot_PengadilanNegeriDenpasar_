@@ -7,10 +7,13 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : false
 });
 
 function noCache(res) {
@@ -18,6 +21,42 @@ function noCache(res) {
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   res.setHeader('Surrogate-Control', 'no-store');
+}
+
+function cleanText(value = '') {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[\u2018\u2019']/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ');
+}
+
+async function getFaqs() {
+  const result = await pool.query(`
+    SELECT
+      id,
+      TRIM(question) AS question,
+      TRIM(answer) AS answer
+    FROM faqs
+    ORDER BY id ASC
+  `);
+
+  return result.rows;
+}
+
+function scoreMatch(query, question) {
+  const qWords = new Set(cleanText(query).split(' ').filter(Boolean));
+  const pWords = cleanText(question).split(' ').filter(Boolean);
+
+  if (pWords.length === 0) return 0;
+
+  let matchCount = 0;
+  for (const word of pWords) {
+    if (qWords.has(word)) matchCount++;
+  }
+
+  return matchCount / pWords.length;
 }
 
 app.get('/', (req, res) => {
@@ -33,7 +72,7 @@ app.get('/api/health', async (req, res) => {
 
     res.status(200).json({
       status: 'OK',
-      message: 'Backend Vercel berjalan',
+      message: 'Backend berjalan',
       database: 'connected',
       waktu_database: result.rows[0].waktu_database
     });
@@ -50,15 +89,11 @@ app.get('/api/faqs', async (req, res) => {
   noCache(res);
 
   try {
-    const result = await pool.query(`
-      SELECT id, question, answer
-      FROM faqs
-      ORDER BY id ASC
-    `);
+    const data = await getFaqs();
 
     res.status(200).json({
       success: true,
-      data: result.rows
+      data
     });
   } catch (error) {
     res.status(500).json({
@@ -72,7 +107,7 @@ app.get('/api/faqs', async (req, res) => {
 app.get('/api/chat', async (req, res) => {
   noCache(res);
 
-  const q = (req.query.q || '').trim();
+  const q = String(req.query.q || '').trim();
 
   if (!q) {
     return res.status(400).json({
@@ -81,27 +116,45 @@ app.get('/api/chat', async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      `SELECT question, answer
-       FROM faqs
-       WHERE LOWER(question) = LOWER($1)
-          OR LOWER(question) LIKE LOWER($2)
-          OR LOWER($1) LIKE '%' || LOWER(question) || '%'
-       ORDER BY
-          CASE WHEN LOWER(question) = LOWER($1) THEN 1 ELSE 2 END,
-          id ASC
-       LIMIT 1`,
-      [q, `%${q}%`]
-    );
+    const faqs = await getFaqs();
+    const qNorm = cleanText(q);
 
-    if (result.rows.length === 0) {
+    let matched = faqs.find(row => cleanText(row.question) === qNorm);
+
+    if (!matched) {
+      matched = faqs.find(row => {
+        const rowNorm = cleanText(row.question);
+        return rowNorm.includes(qNorm) || qNorm.includes(rowNorm);
+      });
+    }
+
+    if (!matched) {
+      let best = null;
+      let bestScore = 0;
+
+      for (const row of faqs) {
+        const score = scoreMatch(q, row.question);
+        if (score > bestScore) {
+          bestScore = score;
+          best = row;
+        }
+      }
+
+      if (best && bestScore >= 0.5) {
+        matched = best;
+      }
+    }
+
+    if (!matched) {
       return res.status(200).json({
         reply: 'Maaf, jawaban untuk pertanyaan tersebut belum tersedia. Silakan pilih menu Lainnya untuk mengajukan pertanyaan kepada petugas.'
       });
     }
 
     res.status(200).json({
-      reply: result.rows[0].answer
+      reply: matched.answer,
+      question: matched.question,
+      id: matched.id
     });
   } catch (error) {
     res.status(500).json({
@@ -114,7 +167,7 @@ app.get('/api/chat', async (req, res) => {
 app.post('/api/pertanyaan-lainnya', async (req, res) => {
   noCache(res);
 
-  const question = (req.body.question || '').trim();
+  const question = String(req.body.question || '').trim();
 
   if (!question) {
     return res.status(400).json({
