@@ -195,9 +195,10 @@ body {
 .questions {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-auto-rows: minmax(min-content, auto);
     align-items: stretch;
     gap: 10px;
-    max-height: clamp(155px, 28vh, 240px);
+    max-height: clamp(155px, 28vh, 260px);
     overflow-y: auto;
     padding-right: 2px;
 }
@@ -206,17 +207,18 @@ body {
     border: none;
     background: #9b0000;
     color: white;
-    padding: 11px 12px;
+    padding: 12px 14px;
     border-radius: 14px;
     cursor: pointer;
     font-size: clamp(12px, 1.7vw, 13px);
     line-height: 1.4;
-    min-height: 50px;
+    min-height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     word-break: break-word;
+    white-space: normal;
     transition: background .2s ease, transform .2s ease;
 }
 
@@ -478,16 +480,18 @@ let faqs = [];
 function toggleChat() {
     const chat = document.getElementById('chatContainer');
     const toggle = document.getElementById('chatToggle');
+    const isOpen = window.getComputedStyle(chat).display === 'flex';
 
-    if (chat.style.display === 'flex') {
+    if (isOpen) {
         chat.style.display = 'none';
+        if (toggle) {
+            toggle.style.display = 'flex';
+        }
     } else {
         chat.style.display = 'flex';
-    }
-
-    if (toggle) {
-        toggle.style.display = 'flex';
-        toggle.style.zIndex = '10011';
+        if (toggle) {
+            toggle.style.display = 'none';
+        }
     }
 }
 
@@ -524,13 +528,7 @@ function cleanText(value = '') {
 }
 
 function shortButtonText(question) {
-    if (!question) return '';
-
-    if (window.innerWidth <= 480) {
-        return question.length > 65 ? question.substring(0, 65) + '...' : question;
-    }
-
-    return question.length > 48 ? question.substring(0, 48) + '...' : question;
+    return String(question || '');
 }
 
 function normalizeFaq(item) {
