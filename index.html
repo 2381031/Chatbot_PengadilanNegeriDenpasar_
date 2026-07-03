@@ -458,16 +458,11 @@ let faqs = [];
 
 function toggleChat() {
     const chat = document.getElementById('chatContainer');
-    const toggle = document.getElementById('chatToggle');
 
     if (chat.style.display === 'flex') {
         chat.style.display = 'none';
-        toggle.style.display = 'flex';
     } else {
         chat.style.display = 'flex';
-        if (window.innerWidth <= 480) {
-            toggle.style.display = 'none';
-        }
     }
 }
 
@@ -729,17 +724,6 @@ async function sendQuestion(question) {
 
 window.addEventListener('resize', function() {
     renderQuestionButtons();
-
-    const chat = document.getElementById('chatContainer');
-    const toggle = document.getElementById('chatToggle');
-
-    if (window.innerWidth > 480 && chat.style.display === 'flex') {
-        toggle.style.display = 'flex';
-    }
-
-    if (window.innerWidth <= 480 && chat.style.display === 'flex') {
-        toggle.style.display = 'none';
-    }
 });
 
 document.addEventListener('DOMContentLoaded', loadQuestions);
