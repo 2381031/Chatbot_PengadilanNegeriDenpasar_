@@ -194,26 +194,30 @@ body {
 
 .questions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-    gap: 8px;
-    max-height: clamp(145px, 26vh, 220px);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    align-items: stretch;
+    gap: 10px;
+    max-height: clamp(155px, 28vh, 240px);
     overflow-y: auto;
-    padding-right: 3px;
+    padding-right: 2px;
 }
 
 .question-btn {
     border: none;
     background: #9b0000;
     color: white;
-    padding: 9px 8px;
-    border-radius: 12px;
+    padding: 11px 12px;
+    border-radius: 14px;
     cursor: pointer;
-    font-size: clamp(11px, 1.7vw, 12px);
-    line-height: 1.25;
-    min-height: 42px;
+    font-size: clamp(12px, 1.7vw, 13px);
+    line-height: 1.4;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     word-break: break-word;
-    transition: .2s ease;
+    transition: background .2s ease, transform .2s ease;
 }
 
 .question-btn:hover {
@@ -290,15 +294,29 @@ body {
 /* Tablet */
 @media (min-width: 481px) and (max-width: 900px) {
     .chat-container {
-        width: min(500px, calc(100vw - 36px));
-        height: min(700px, calc(100dvh - 120px));
+        width: min(520px, calc(100vw - 36px));
+        height: min(720px, calc(100dvh - 120px));
         right: 18px;
         bottom: 95px;
     }
 
     .questions {
-        grid-template-columns: repeat(2, 1fr);
-        max-height: 230px;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        max-height: 250px;
+    }
+}
+
+@media (min-width: 901px) and (max-width: 1199px) {
+    .chat-container {
+        width: min(620px, calc(100vw - 40px));
+        height: min(760px, calc(100dvh - 100px));
+        right: 24px;
+        bottom: 96px;
+    }
+
+    .questions {
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        max-height: 280px;
     }
 }
 
@@ -344,11 +362,12 @@ body {
 
     .question-btn {
         font-size: 12px;
-        min-height: 40px;
+        min-height: 44px;
+        padding: 10px 12px;
     }
 
     .question-btn.other {
-        grid-column: auto;
+        grid-column: 1 / -1;
     }
 
     .chat-input-area {
