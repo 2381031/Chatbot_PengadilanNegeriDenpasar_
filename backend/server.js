@@ -16,6 +16,10 @@ const pool = new Pool({
     : false
 });
 
+function isDatabaseConfigured() {
+  return Boolean(process.env.DATABASE_URL);
+}
+
 function noCache(res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');
@@ -67,6 +71,13 @@ app.get('/', (req, res) => {
 app.get('/api/health', async (req, res) => {
   noCache(res);
 
+  if (!isDatabaseConfigured()) {
+    return res.status(500).json({
+      status: 'ERROR',
+      message: 'DATABASE_URL belum disetel. Silakan atur variabel lingkungan DATABASE_URL di Vercel.',
+    });
+  }
+
   try {
     const result = await pool.query('SELECT NOW() AS waktu_database');
 
@@ -87,6 +98,13 @@ app.get('/api/health', async (req, res) => {
 
 app.get('/api/faqs', async (req, res) => {
   noCache(res);
+
+  if (!isDatabaseConfigured()) {
+    return res.status(500).json({
+      success: false,
+      error: 'DATABASE_URL belum disetel. Silakan atur variabel lingkungan DATABASE_URL di Vercel.',
+    });
+  }
 
   try {
     const data = await getFaqs();

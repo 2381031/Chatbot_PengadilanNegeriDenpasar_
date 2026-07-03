@@ -24,6 +24,10 @@
       "dest": "/Logo.png"
     },
     {
+      "src": "/PandePintar.png",
+      "dest": "/PandePintar.png"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
