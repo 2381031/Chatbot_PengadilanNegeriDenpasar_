@@ -35,7 +35,7 @@ body {
     background: transparent;
     cursor: pointer;
     box-shadow: 0 12px 28px rgba(0,0,0,.18);
-    z-index: 9999;
+    z-index: 10011 !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -91,7 +91,7 @@ body {
     box-shadow: 0 14px 40px rgba(0,0,0,.25);
     display: none;
     flex-direction: column;
-    z-index: 9998;
+    z-index: 10009;
 }
 
 /* Header */
@@ -458,11 +458,17 @@ let faqs = [];
 
 function toggleChat() {
     const chat = document.getElementById('chatContainer');
+    const toggle = document.getElementById('chatToggle');
 
     if (chat.style.display === 'flex') {
         chat.style.display = 'none';
     } else {
         chat.style.display = 'flex';
+    }
+
+    if (toggle) {
+        toggle.style.display = 'flex';
+        toggle.style.zIndex = '10011';
     }
 }
 
