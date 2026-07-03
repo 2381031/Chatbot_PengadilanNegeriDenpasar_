@@ -26,26 +26,55 @@ body {
 /* Tombol buka chatbot */
 .chat-toggle {
     position: fixed;
-    right: clamp(16px, 3vw, 28px);
-    bottom: clamp(16px, 3vw, 28px);
-    width: clamp(56px, 7vw, 68px);
-    height: clamp(56px, 7vw, 68px);
+    right: env(safe-area-inset-right, clamp(16px, 3vw, 28px));
+    bottom: env(safe-area-inset-bottom, clamp(16px, 3vw, 28px));
+    width: clamp(84px, 12vw, 108px);
+    height: clamp(84px, 12vw, 108px);
     border-radius: 50%;
     border: none;
-    background: #9b0000;
-    color: white;
-    font-size: clamp(23px, 3vw, 29px);
+    background: transparent;
     cursor: pointer;
-    box-shadow: 0 8px 22px rgba(0,0,0,.28);
+    box-shadow: 0 12px 28px rgba(0,0,0,.18);
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: .2s ease;
+    transition: transform .2s ease, box-shadow .2s ease;
+    overflow: hidden;
+}
+
+.chat-toggle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .chat-toggle:hover {
-    background: #b30000;
+    transform: scale(1.05);
+    box-shadow: 0 14px 32px rgba(0,0,0,.28);
+}
+
+.chat-close {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,.16);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.chat-close:hover {
+    background: rgba(255,255,255,.28);
     transform: scale(1.05);
 }
 
@@ -67,13 +96,23 @@ body {
 
 /* Header */
 .chat-header {
+    position: relative;
     background: #9b0000;
     color: white;
     padding: clamp(13px, 2vw, 18px);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 13px;
     flex-shrink: 0;
+}
+
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    flex: 1;
 }
 
 .chat-header img {
@@ -358,18 +397,23 @@ body {
 
 <body>
 
-<button class="chat-toggle" onclick="toggleChat()" id="chatToggle">
-    <i class="fa-solid fa-comments"></i>
+<button class="chat-toggle" onclick="toggleChat()" id="chatToggle" aria-label="Buka chatbot">
+    <img src="/static/PandePintar.png" alt="Logo Pande Pintar">
 </button>
 
 <div class="chat-container" id="chatContainer">
 
     <div class="chat-header">
-        <img src="Logo.png" alt="Logo PN Denpasar">
-        <div class="header-text">
-            <h2>PN Denpasar</h2>
-            <p>Pelayanan Informasi Online</p>
+        <div class="chat-header-left">
+            <img src="/static/Logo.png" alt="Logo PN Denpasar">
+            <div class="header-text">
+                <h2>PN Denpasar</h2>
+                <p>Pelayanan Informasi Online</p>
+            </div>
         </div>
+        <button class="chat-close" onclick="toggleChat()" aria-label="Tutup chatbot">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 
     <div id="chatbox">
