@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "dist-serverless",
+    "sourceMap": false
+  },
+  "include": ["serverless.ts", "src/**/*.ts"]
+}

@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "backend/server.js",
+      "src": "backend/serverless.ts",
       "use": "@vercel/node"
     },
     {
@@ -12,12 +12,16 @@
     {
       "src": "Logo.png",
       "use": "@vercel/static"
+    },
+    {
+      "src": "PandePintar.png",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/server.js"
+      "dest": "backend/serverless.ts"
     },
     {
       "src": "/Logo.png",
