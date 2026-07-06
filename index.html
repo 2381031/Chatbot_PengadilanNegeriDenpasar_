@@ -28,8 +28,8 @@ body {
     position: fixed;
     right: env(safe-area-inset-right, clamp(16px, 3vw, 28px));
     bottom: env(safe-area-inset-bottom, clamp(16px, 3vw, 28px));
-    width: clamp(84px, 12vw, 108px);
-    height: clamp(84px, 12vw, 108px);
+    width: clamp(64px, 10vw, 84px);
+    height: clamp(64px, 10vw, 84px);
     border-radius: 50%;
     border: none;
     background: transparent;
@@ -41,6 +41,7 @@ body {
     justify-content: center;
     transition: transform .2s ease, box-shadow .2s ease;
     overflow: hidden;
+    aspect-ratio: 1 / 1;
 }
 
 .chat-toggle img {
@@ -333,8 +334,8 @@ body {
     }
 
     .chat-toggle {
-        width: 56px;
-        height: 56px;
+        width: 60px;
+        height: 60px;
         right: 16px;
         bottom: 16px;
         font-size: 23px;
