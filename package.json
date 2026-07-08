@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^10.2.5",
+    "@types/node": "^18.19.130",
     "@types/pg": "^8.20.0",
     "nodemon": "latest",
     "ts-node": "latest",

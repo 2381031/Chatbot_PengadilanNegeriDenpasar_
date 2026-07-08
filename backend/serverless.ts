@@ -1,14 +1,14 @@
 import type { FastifyInstance } from 'fastify';
 import { createApp } from './src/main';
 
-let serverPromise: Promise<FastifyInstance> | null = null;
+let serverPromise: Promise<any> | null = null;
 
-async function getFastifyInstance(): Promise<FastifyInstance> {
+async function getFastifyInstance(): Promise<any> {
   if (!serverPromise) {
     serverPromise = createApp()
-      .then(async app => {
+        .then(async app => {
         await app.init();
-        const fastify = app.getHttpAdapter().getInstance<FastifyInstance>();
+        const fastify = app.getHttpAdapter().getInstance();
         await fastify.ready();
         return fastify;
       })

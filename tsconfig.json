@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "ignoreDeprecations": "6.0",
     "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
@@ -11,5 +14,6 @@
     "rootDir": ".",
     "outDir": "dist"
   },
-  "include": ["backend/**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": ["backend","dist","node_modules"]
 }
