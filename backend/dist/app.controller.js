@@ -14,14 +14,41 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
+const fs_1 = require("fs");
 const path_1 = require("path");
 const app_service_1 = require("./app.service");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
     }
+    resolveProjectFile(fileName) {
+        const candidates = [
+            (0, path_1.resolve)(__dirname, '..', '..', '..', fileName),
+            (0, path_1.resolve)(__dirname, '..', '..', fileName),
+            (0, path_1.resolve)(__dirname, '..', fileName),
+            (0, path_1.resolve)(process.cwd(), fileName),
+            (0, path_1.resolve)(process.cwd(), '..', fileName),
+            (0, path_1.resolve)(process.cwd(), '..', '..', fileName),
+        ];
+        return candidates.find((candidate) => (0, fs_1.existsSync)(candidate)) ?? null;
+    }
     root(reply) {
-        return reply.type('text/html').sendFile('index.html', (0, path_1.join)(__dirname, '..'));
+        const indexPath = this.resolveProjectFile('index.html');
+        if (!indexPath) {
+            throw new common_1.NotFoundException();
+        }
+        reply.type('text/html; charset=utf-8');
+        return reply.send((0, fs_1.readFileSync)(indexPath, 'utf8'));
+    }
+    widgetScript(reply) {
+        const widgetPath = this.resolveProjectFile('widget.js');
+        if (!widgetPath) {
+            throw new common_1.NotFoundException();
+        }
+        reply
+            .header('Content-Type', 'application/javascript; charset=utf-8')
+            .header('Cache-Control', 'public, max-age=3600');
+        return reply.send((0, fs_1.readFileSync)(widgetPath, 'utf8'));
     }
     async health() {
         return this.appService.getHealth();
@@ -39,11 +66,18 @@ let AppController = class AppController {
 exports.AppController = AppController;
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Res)()),
+    __param(0, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AppController.prototype, "root", null);
+__decorate([
+    (0, common_1.Get)('widget.js'),
+    __param(0, (0, common_1.Res)({ passthrough: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AppController.prototype, "widgetScript", null);
 __decorate([
     (0, common_1.Get)('api/health'),
     __metadata("design:type", Function),

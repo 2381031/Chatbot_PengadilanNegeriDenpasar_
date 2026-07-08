@@ -3,14 +3,16 @@
   "builds": [
     {
       "src": "backend/serverless.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "widget.js",
+          "index.html"
+        ]
+      }
     },
     {
       "src": "index.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "widget.js",
       "use": "@vercel/static"
     },
     {
@@ -22,11 +24,14 @@
       "use": "@vercel/static"
     }
   ],
-  "static": {},
   "routes": [
     {
       "src": "/widget.js",
-      "dest": "/widget.js"
+      "dest": "backend/serverless.ts",
+      "headers": {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Cache-Control": "public, max-age=3600"
+      }
     },
     {
       "src": "/api/(.*)",
